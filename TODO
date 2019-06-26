@@ -1,0 +1,10 @@
+* documentation
+* the BSD makefile is a mess
+* maybe create a .so lib
+* maybe skip lines starting with a comment marker (e.g. "#")
+* Python bindings
+* -m option: insert martians
+  * more granular control of which martians to insert
+* optionally split IPv4/IPv6 output
+* parse hex str
+* use inet_pton(3) as alternative parser
