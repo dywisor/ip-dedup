@@ -99,7 +99,7 @@ int parse_ip4_addr_split (
 
     if ( ret == PARSE_IP_RET_SUCCESS ) {
         ret = parse_ip4_addr_split_read_prefixlen (
-            &_parse_ip4_buf, addr_str
+            &_parse_ip4_buf, prefixlen_str
         );
 
         if ( ret == PARSE_IP_RET_SUCCESS ) {
