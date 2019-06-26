@@ -1,3 +1,13 @@
+## additional files to ignore
+/build
+/doc/pdf
+/local
+/tmp
+
+*.tmp
+.keep
+
+## GitHub default C .gitignore
 # Prerequisites
 *.d
 
