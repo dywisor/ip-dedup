@@ -166,8 +166,8 @@ static void parse_ip4_addr_split_make_addr (
 
 
 static int parse_ip4_addr_split_read_hex (
-    struct parse_ip4_data* const restrict buf,
-    char* const restrict addr_str
+    __attribute__((unused)) struct parse_ip4_data* const restrict buf,
+    __attribute__((unused)) char* const restrict addr_str
 ) {
     return PARSE_IP_RET_NOT_IMPLEMENTED;
 }
