@@ -256,7 +256,7 @@ static int ip_tree_builder_parse_ip_v6 (
     const size_t slen,
     struct ip_tree_builder_parse_data* const restrict pstate
 ) {
-    pstate->addr_type = PARSE_IP_TYPE_IPV4;
+    pstate->addr_type = PARSE_IP_TYPE_IPV6;
 
     return parse_ip6_addr ( line, slen, &(pstate->addr_v6) );
 }
