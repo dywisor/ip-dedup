@@ -22,15 +22,6 @@ void ip4_addr_init (
 }
 
 
-void ip4_addr_init_copy (
-    struct ip4_addr_t* const restrict obj,
-    const struct ip4_addr_t* const src
-) {
-    obj->prefixlen = src->prefixlen;
-    obj->addr      = src->addr;
-}
-
-
 void ip4_addr_init_child (
     struct ip4_addr_t* const restrict obj,
     const struct ip4_addr_t* const restrict src,

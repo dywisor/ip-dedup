@@ -20,11 +20,6 @@ void ip4_addr_init (
     const ip4_addr_data_t addr
 );
 
-void ip4_addr_init_copy (
-    struct ip4_addr_t* const restrict obj,
-    const struct ip4_addr_t* const restrict src
-);
-
 void ip4_addr_init_child (
     struct ip4_addr_t* const restrict obj,
     const struct ip4_addr_t* const restrict src,

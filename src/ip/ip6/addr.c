@@ -24,16 +24,6 @@ void ip6_addr_init (
 }
 
 
-void ip6_addr_init_copy (
-    struct ip6_addr_t* const restrict obj,
-    const struct ip6_addr_t* const restrict src
-) {
-    obj->prefixlen = src->prefixlen;
-    obj->addr.low  = src->addr.low;
-    obj->addr.high = src->addr.high;
-}
-
-
 void ip6_addr_init_child (
     struct ip6_addr_t* const restrict obj,
     const struct ip6_addr_t* const restrict src,

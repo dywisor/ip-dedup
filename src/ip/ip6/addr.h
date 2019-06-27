@@ -21,11 +21,6 @@ void ip6_addr_init (
     const ip6_addr_data_t* const restrict addr
 );
 
-void ip6_addr_init_copy (
-    struct ip6_addr_t* const restrict obj,
-    const struct ip6_addr_t* const restrict src
-);
-
 void ip6_addr_init_child (
     struct ip6_addr_t* const restrict obj,
     const struct ip6_addr_t* const restrict src,
