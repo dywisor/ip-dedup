@@ -10,8 +10,8 @@
 
 /** function that prints an ip tree to the given output stream.
  *
- * @param outstream
- * @param tree
+ * @param outstream   output stream (must not be NULL)
+ * @param tree        IP tree (should not be NULL)
  *
  * @return None (implicit)
  * */

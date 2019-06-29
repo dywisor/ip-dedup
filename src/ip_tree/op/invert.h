@@ -11,9 +11,15 @@
 /**
  * Inverts a tree so that every hot node looses its 'hot' marker and vice versa.
  *
- * Note: bottom-up DFS
+ * injective operation except for:
+ * - hot root node (0/0)  -> empty tree
+ * - empty tree          <-> empty tree
  *
- * @param tree:  collapsed tree
+ * Note: top-down DFS
+ *
+ * @param tree:  collapsed tree (should not be NULL)
+ *
+ * @return non-zero on error (invalid input tree or malloc() failure)
  * */
 int ip_tree_invert ( struct ip_tree* const restrict tree );
 

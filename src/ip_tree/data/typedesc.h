@@ -8,8 +8,11 @@
 #include "node.h"
 #include "../../ip.h"
 
-/* IP tree operations that depend on
- * whether IPv4 or IPv6 addresses are being processed */
+/*
+ * IP tree operations that depend on
+ * whether IPv4 or IPv6 addresses are being processed
+ * See node.h / node.c for the actual implementation.
+ * */
 
 /** Initializes an empty tree node */
 typedef void (*ip_tree_node_init_null_func) ( struct ip_tree_node* const restrict );

@@ -55,56 +55,189 @@ struct ip_tree_node {
    struct ip_tree_node* right;
 
    bool                 hot;
-   ip_addr_variant_t      addr;
+   ip_addr_variant_t    addr;
 };
 
+
+/**
+ * @param node  IP tree node (not NULL)
+ *
+ * @return true if (node->left is not NULL and node->left->hot), else False.
+ * */
 bool ip_tree_node_left_hot ( const struct ip_tree_node* const restrict node );
+
+
+/**
+ * @param node  IP tree node (not NULL)
+ *
+ * @return true if (node->right is not NULL and node->right->hot), else False.
+ * */
 bool ip_tree_node_right_hot ( const struct ip_tree_node* const restrict node );
 
 
 /* IPv4 functions */
+/**
+ * Initializes an IP tree node representating an IPv4 address with null data.
+ *
+ * @param node  IP tree node (not NULL)
+ *
+ * @return None (implicit)
+ * */
 void ip4_tree_node_init_null ( struct ip_tree_node* const restrict node );
 
+
+/**
+ * Creates a new IP tree node representing an IPv4 address
+ * and initializes it with null data.
+ *
+ * @return new IP tree node, NULL on error (malloc())
+ * */
 struct ip_tree_node* ip4_tree_node_new_null (void);
 
+
+/**
+ * Creates a sibling of the given IPv4 tree node.
+ *
+ * The sibling's address is mostly identical to the input node,
+ * but has its bit flipped at prefixlen.
+ *
+ * @param src  original node for which a sibling should be created (not NULL)
+ * @param hot  whether the created sibling should be marked as hot or not
+ *
+ * @return new IP tree node, NULL on error (malloc())
+ * */
 struct ip_tree_node* ip4_tree_node_new_sibling (
    const struct ip_tree_node* const restrict src,
    const bool hot
 );
 
+
+/**
+ * Creates a child of the given IPv4 tree node.
+ *
+ * The child inherits its parent's network address, but extends the
+ * prefixlen by 1, thus creating a subnet. The value of the bit at
+ * that position can be controlled with the bit_set parameter.
+ *
+ * @param src      original node for which a child should be created (not NULL)
+ * @param bit_set  whether the subnet's bit should be set
+ * @param hot      whether the child node should be marked as hot
+ *
+ * @return new IP tree node, NULL on error (malloc())
+ * */
 struct ip_tree_node* ip4_tree_node_new_child (
    const struct ip_tree_node* const restrict src,
    const bool bit_set,
    const bool hot
 );
 
-void ip4_tree_node_destroy (
-   struct ip_tree_node** const restrict node_ptr
-);
 
-void ip4_tree_node_flip_addr_inplace ( struct ip_tree_node* const restrict node );
+/**
+ * Recursively destroys a IP tree containing IPv4 addresses.
+ *
+ * @param node_ptr   pointer to tree (may be NULL),
+ *                   the tree will be freed and the pointer will be set to NULL
+ *
+ * @return None (implicit)
+ * */
+void ip4_tree_node_destroy ( struct ip_tree_node** const restrict node_ptr );
+
+
+/**
+ * Flips the address bit if a node at its prefixlen,
+ * thus turning the node into its sibling.
+ * (And vice versa, should you call this function on that node again.)
+ *
+ * @param node  IP tree node (not NULL)
+ *
+ * @return None (implicit)
+ */
+void ip4_tree_node_flip_addr_inplace (
+   struct ip_tree_node* const restrict node
+);
 
 
 /* IPv6 functions */
+/**
+ * Initializes an IP tree node representating an IPv6 address with null data.
+ *
+ * @param node  IP tree node (not NULL)
+ *
+ * @return None (implicit)
+ * */
 void ip6_tree_node_init_null ( struct ip_tree_node* const restrict node );
 
+
+/**
+ * Creates a new IP tree node representing an IPv6 address
+ * and initializes it with null data.
+ *
+ * @return new IP tree node, NULL on error (malloc())
+ * */
 struct ip_tree_node* ip6_tree_node_new_null (void);
 
+
+/**
+ * Creates a sibling of the given IPv6 tree node.
+ *
+ * The sibling's address is mostly identical to the input node,
+ * but has its bit flipped at prefixlen.
+ *
+ * @param src  original node for which a sibling should be created (not NULL)
+ * @param hot  whether the created sibling should be marked as hot or not
+ *
+ * @return new IP tree node, NULL on error (malloc())
+ * */
 struct ip_tree_node* ip6_tree_node_new_sibling (
    const struct ip_tree_node* const restrict src,
    const bool hot
 );
 
+
+/**
+ * Creates a child of the given IPv6 tree node.
+ *
+ * The child inherits its parent's network address, but extends the
+ * prefixlen by 1, thus creating a subnet. The value of the bit at
+ * that position can be controlled with the bit_set parameter.
+ *
+ * @param src      original node for which a child should be created (not NULL)
+ * @param bit_set  whether the subnet's bit should be set
+ * @param hot      whether the child node should be marked as hot
+ *
+ * @return new IP tree node, NULL on error (malloc())
+ * */
 struct ip_tree_node* ip6_tree_node_new_child (
    const struct ip_tree_node* const restrict src,
    const bool bit_set,
    const bool hot
 );
 
+
+/**
+ * Recursively destroys a IP tree containing IPv6 addresses.
+ *
+ * @param node_ptr   pointer to tree (may be NULL),
+ *                   the tree will be freed and the pointer will be set to NULL
+ *
+ * @return None (implicit)
+ * */
 void ip6_tree_node_destroy (
    struct ip_tree_node** const restrict node_ptr
 );
 
-void ip6_tree_node_flip_addr_inplace ( struct ip_tree_node* const restrict node );
+
+/**
+ * Flips the address bit if a node at its prefixlen,
+ * thus turning the node into its sibling.
+ * (And vice versa, should you call this function on that node again.)
+ *
+ * @param node  IP tree node (not NULL)
+ *
+ * @return None (implicit)
+ */
+void ip6_tree_node_flip_addr_inplace (
+   struct ip_tree_node* const restrict node
+);
 
 #endif

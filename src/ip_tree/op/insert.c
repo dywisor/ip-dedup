@@ -11,7 +11,7 @@
 
 #include "../../ip.h"
 
-
+/* actual insert function() - no NULL check guards */
 static int _ip_tree_insert (
    struct ip_tree* const restrict tree,
    const ip_addr_variant_t* const restrict var_addr
@@ -73,6 +73,7 @@ static int _ip_tree_insert (
    struct ip_tree* const restrict tree,
    const ip_addr_variant_t* const restrict var_addr
 ) {
+   /* determine prefixlen == tree depth of var_addr */
    const ip_prefixlen_t prefixlen = (
       tree->tdesc->f_get_addr_prefixlen ( var_addr )
    );
@@ -84,10 +85,11 @@ static int _ip_tree_insert (
     * */
    ip_prefixlen_t cur_prefixpos;
 
-   /* current node in the subnet path */
+   /* current node in the subnet path - shared, do not free */
    struct ip_tree_node* cur_node;
 
    /* pointer to the next node in the subnet path, child node of cur_node */
+   /* shared, do not free */
    struct ip_tree_node* sub_node;
 
    /* prefixlen should be within valid range (always >= 0 due to uint) */

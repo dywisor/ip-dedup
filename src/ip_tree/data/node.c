@@ -5,6 +5,7 @@
 #include "node.h"
 #include "../../ip.h"
 
+/** Common node null initialization code. */
 static void _ip_tree_node_init_null ( struct ip_tree_node* const restrict node );
 
 static void _ip_tree_node_init_null ( struct ip_tree_node* const restrict node ) {
@@ -12,7 +13,7 @@ static void _ip_tree_node_init_null ( struct ip_tree_node* const restrict node )
     node->right = NULL;
 
     node->hot   = false;
-    /* node->addr remains unmodified */
+    /* node->addr remains unmodified - memset(...) */
 }
 
 

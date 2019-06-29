@@ -14,15 +14,14 @@
  *
  * Note: iterative
  *
- * @param root:       tree
- * @param ip_addr:    IPv4 address (as integer)
- * @param prefixlen:  netmask length (as integer)
+ * @param root:                 tree (should not be NULL)
+ * @param ip_addr_variant_t     variant-type IP address (should not be NULL)
  *
- * @returns 0 on success, any other value indicates an error
+ * @returns non-zero on error
  * */
 int ip_tree_insert (
    struct ip_tree* const restrict tree,
-   const ip_addr_variant_t* const restrict addr
+   const ip_addr_variant_t* const restrict var_addr
 );
 
 /** IPv4 variant of ip_tree_insert() */
