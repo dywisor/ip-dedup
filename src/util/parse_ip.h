@@ -3,3 +3,5 @@
 #include "parse_ip/ip6.h"
 #include "parse_ip/mixed.h"
 #include "parse_ip/combined.h"
+
+#include "parse_ip/parsefile.h"
