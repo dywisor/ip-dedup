@@ -71,7 +71,7 @@ struct ip_tree* ip_tree_builder_steal_v6 (
  *
  * @return PARSE_IP_RET status codes, zero means success
  * */
-int ip_tree_builder_parse (
+int ip_tree_builder_insert_from_stream (
     struct ip_tree_build_data* const restrict obj,
     FILE* const restrict input_stream,
     const bool keep_going

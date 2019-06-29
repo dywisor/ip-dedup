@@ -173,7 +173,9 @@ static int main_inner_parse_input (
                return EX_USAGE;
 
             } else {
-               parse_ret = ip_tree_builder_parse ( g->tree_builder, stdin, g->want_keep_going );
+               parse_ret = ip_tree_builder_insert_from_stream (
+                  g->tree_builder, stdin, g->want_keep_going
+               );
                did_read_stdin = true;
 
                main_inner_parse_input__ret_on_error();
@@ -183,7 +185,9 @@ static int main_inner_parse_input (
             instream = fopen ( arg, "r" );
             if ( instream == NULL ) { return EX_IOERR; }
 
-            parse_ret = ip_tree_builder_parse ( g->tree_builder, instream, g->want_keep_going );
+            parse_ret = ip_tree_builder_insert_from_stream (
+               g->tree_builder, instream, g->want_keep_going
+            );
 
             fclose ( instream );
             instream = NULL;
@@ -193,7 +197,9 @@ static int main_inner_parse_input (
       }
 
    } else {
-      parse_ret = ip_tree_builder_parse ( g->tree_builder, stdin, g->want_keep_going );
+      parse_ret = ip_tree_builder_insert_from_stream (
+         g->tree_builder, stdin, g->want_keep_going
+      );
       did_read_stdin = true;
 
       main_inner_parse_input__ret_on_error();
