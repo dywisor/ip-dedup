@@ -271,25 +271,11 @@ static int main_inner (
 
    /* initialize tree builder and main dispatcher,
     * depending on tree mode */
-   switch ( g->tree_mode ) {
-      case IPDEDUP_TREE_MODE_IPV4:
-         g->tree_builder = ip_tree_builder_new_v4();
-         break;
-
-      case IPDEDUP_TREE_MODE_IPV6:
-         g->tree_builder = ip_tree_builder_new_v6();
-         break;
-
-      case IPDEDUP_TREE_MODE_MIXED:
-         g->tree_builder = ip_tree_builder_new_mixed();
-         break;
-
-      default:
-         return EX_SOFTWARE;
-   }
+   g->tree_builder = ip_tree_builder_new ( g->tree_mode );
 
    if ( g->tree_builder == NULL ) {
       perror ( "Failed to initialize ip tree data structures" );
+      /* possibly EX_SOFTWARE if tree_mode was not valid */
       return EX_OSERR;
    }
 

@@ -44,53 +44,27 @@ static int ip_tree_build_data_init_v6 ( struct ip_tree_build_data* const obj ) {
 }
 
 
-struct ip_tree_build_data* ip_tree_builder_new_v4 (void) {
+struct ip_tree_build_data* ip_tree_builder_new ( const int tree_mode ) {
     struct ip_tree_build_data* obj;
+
+    if ( ! parse_ip_check_type_valid ( tree_mode ) ) { return NULL; }
 
     obj = ip_tree_build_data_new_empty();
     if ( obj != NULL ) {
-        obj->tree_mode = PARSE_IP_TYPE_IPV4;
+        obj->tree_mode = tree_mode;
 
-        if ( ip_tree_build_data_init_v4 ( obj ) != 0 ) {
-            free ( obj );
-            obj = NULL;
+        if ( (obj->tree_mode & PARSE_IP_TYPE_IPV4) != 0 ) {
+            if ( ip_tree_build_data_init_v4 ( obj ) != 0 ) {
+                ip_tree_builder_destroy ( &obj );
+                return NULL;
+            }
         }
-    }
 
-    return obj;
-}
-
-
-struct ip_tree_build_data* ip_tree_builder_new_v6 (void) {
-    struct ip_tree_build_data* obj;
-
-    obj = ip_tree_build_data_new_empty();
-    if ( obj != NULL ) {
-        obj->tree_mode = PARSE_IP_TYPE_IPV6;
-
-        if ( ip_tree_build_data_init_v6 ( obj ) != 0 ) {
-            free ( obj );
-            obj = NULL;
-        }
-    }
-
-    return obj;
-}
-
-
-struct ip_tree_build_data* ip_tree_builder_new_mixed (void) {
-    struct ip_tree_build_data* obj;
-
-    obj = ip_tree_build_data_new_empty();
-    if ( obj != NULL ) {
-        obj->tree_mode = PARSE_IP_TYPE_BOTH;
-
-        if (
-            ( ip_tree_build_data_init_v4 ( obj ) != 0 )
-            || ( ip_tree_build_data_init_v6 ( obj ) != 0 )
-        ) {
-            free ( obj );
-            obj = NULL;
+        if ( (obj->tree_mode & PARSE_IP_TYPE_IPV6) != 0 ) {
+            if ( ip_tree_build_data_init_v6 ( obj ) != 0 ) {
+                ip_tree_builder_destroy ( &obj );
+                return NULL;    /* redundant */
+            }
         }
     }
 

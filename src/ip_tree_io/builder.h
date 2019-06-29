@@ -30,21 +30,9 @@ struct ip_tree_build_data {
 
 
 /**
- * Creates a new tree builder for IPv4 addresses only.
+ * Creates a new tree builder.
  * */
-struct ip_tree_build_data* ip_tree_builder_new_v4 (void);
-
-
-/**
- * Creates a new tree builder for IPv6 addresses only.
- * */
-struct ip_tree_build_data* ip_tree_builder_new_v6 (void);
-
-
-/**
- * Creates a new tree builder for IPv4 and IPv6 addresses.
- * */
-struct ip_tree_build_data* ip_tree_builder_new_mixed (void);
+struct ip_tree_build_data* ip_tree_builder_new ( const int tree_mode );
 
 
 /**
