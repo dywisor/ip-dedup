@@ -9,19 +9,21 @@
 #include "../../ip.h"
 #include "../../ip_tree.h"
 #include "../../ip_tree_io/builder.h"
+#include "../../util/parse_ip/mixed.h"
 
 /**
  * mode of tree operations, choose from
  * - IPv4 only
  * - IPv6 only
  * - mixed IPv4 / IPv6
+ *
+ * These are just aliases of PARSE_IP_TYPE.
  * */
 enum {
-    IPDEDUP_TREE_MODE_NONE  = 0,
-
-    IPDEDUP_TREE_MODE_IPV4  = 0x1,
-    IPDEDUP_TREE_MODE_IPV6  = 0x2,
-    IPDEDUP_TREE_MODE_MIXED = (IPDEDUP_TREE_MODE_IPV4 | IPDEDUP_TREE_MODE_IPV6)
+    IPDEDUP_TREE_MODE_NONE  = PARSE_IP_TYPE_NONE,
+    IPDEDUP_TREE_MODE_IPV4  = PARSE_IP_TYPE_IPV4,
+    IPDEDUP_TREE_MODE_IPV6  = PARSE_IP_TYPE_IPV6,
+    IPDEDUP_TREE_MODE_MIXED = PARSE_IP_TYPE_BOTH
 };
 
 
