@@ -138,6 +138,7 @@ int ip_tree_builder_parse (
     struct parse_ip_addr_data pstate;
     struct readfile_state rstate;
 
+    int         read_ret;
     int         ret;
     bool        one_hot;
     unsigned    keep_going_status;  /* 0x1 -> any success, 0x2 -> any invalid */
@@ -148,7 +149,9 @@ int ip_tree_builder_parse (
 
     keep_going_status = 0;
 
-    while ( readfile_next_effective ( &rstate ) == READFILE_RET_LINE ) {
+    while (
+        (read_ret = readfile_next_effective ( &rstate )) == READFILE_RET_LINE
+    ) {
 
         pstate.addr_type = PARSE_IP_TYPE_NONE;
 
@@ -200,20 +203,25 @@ int ip_tree_builder_parse (
         }
     }
 
-    switch ( keep_going_status ) {
-        case 0x0:
-        case 0x1:
-        case 0x3:
-            ret = PARSE_IP_RET_SUCCESS;
-            break;
+    if ( read_ret < 0 ) {
+        ret = -1;
 
-        case 0x2:
-            ret = PARSE_IP_RET_INVALID;
-            break;
+    } else {
+        switch ( keep_going_status ) {
+            case 0x0:
+            case 0x1:
+            case 0x3:
+                ret = PARSE_IP_RET_SUCCESS;
+                break;
 
-        default:
-            ret = PARSE_IP_RET_FAIL;
-            break;
+            case 0x2:
+                ret = PARSE_IP_RET_INVALID;
+                break;
+
+            default:
+                ret = PARSE_IP_RET_FAIL;
+                break;
+        }
     }
 
     readfile_state_free_data ( &rstate );
