@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <errno.h>
 #include <stdio.h>
 
 #include "readfile.h"
@@ -84,13 +85,13 @@ int readfile_next (
 ) {
     ssize_t nread;
 
+    errno = 0;
     nread = getline (
         &(rstate->line_buf), &(rstate->line_buf_size), rstate->stream
     );
 
     if ( nread < 0 ) {
-        /* maybe check errno */
-        return READFILE_RET_EOF;
+        return (errno == 0) ? READFILE_RET_EOF : -1;
     }
 
     rstate->line_len = (size_t) nread;
