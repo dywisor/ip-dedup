@@ -129,16 +129,6 @@ struct ip_tree* ip_tree_builder_steal_v6 (
     return tree;
 }
 
-#define ip_tree_builder_parse__free_buf()  \
-    do { \
-        readfile_state_free_data ( &rstate ); \
-    } while (0)
-
-#define ip_tree_builder_parse__return(_retcode)  \
-    do { \
-        ip_tree_builder_parse__free_buf(); \
-        return (_retcode); \
-    } while (0)
 
 int ip_tree_builder_parse (
     struct ip_tree_build_data* const restrict obj,
@@ -169,16 +159,28 @@ int ip_tree_builder_parse (
 
                 if ( (pstate.addr_type & PARSE_IP_TYPE_IPV4) != 0 ) {
                     ret = ip4_tree_insert ( obj->v4, &(pstate.addr_v4) );
-                    if ( ret != 0 ) { ip_tree_builder_parse__return ( -1 ); }
+                    if ( ret != 0 ) {
+                        readfile_state_free_data ( &rstate );
+                        return -1;
+                    }
                     one_hot = true;
                 }
 
                 if ( (pstate.addr_type & PARSE_IP_TYPE_IPV6) != 0 ) {
                     ret = ip6_tree_insert ( obj->v6, &(pstate.addr_v6) );
-                    if ( ret != 0 ) { ip_tree_builder_parse__return ( -1 ); }
+                    if ( ret != 0 ) {
+                        readfile_state_free_data ( &rstate );
+                        return -1;
+                    }
                     one_hot = true;
                 }
-                if ( ! one_hot ) { ip_tree_builder_parse__return ( -1 ); }
+
+                if ( ! one_hot ) {
+                    if ( ret != 0 ) {
+                        readfile_state_free_data ( &rstate );
+                        return -1;
+                    }
+                }
                 keep_going_status |= 0x1;
                 break;
 
@@ -186,13 +188,15 @@ int ip_tree_builder_parse (
                 if ( keep_going ) {
                     keep_going_status |= 0x2;
                 } else {
-                    ip_tree_builder_parse__return ( ret );
+                    readfile_state_free_data ( &rstate );
+                    return ret;
                 }
                 break;
 
             default:
-                ip_tree_builder_parse__return ( -1 );
-                break;
+                readfile_state_free_data ( &rstate );
+                return -1;
+                break;  /* unreachable */
         }
     }
 
@@ -212,7 +216,6 @@ int ip_tree_builder_parse (
             break;
     }
 
-    ip_tree_builder_parse__return ( ret );
+    readfile_state_free_data ( &rstate );
+    return ret;
 }
-#undef ip_tree_builder_parse__return
-#undef ip_tree_builder_parse__free_buf
