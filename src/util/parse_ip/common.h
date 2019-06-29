@@ -17,11 +17,13 @@
  *
  * */
 enum {
+    PARSE_IP_RET_READ_ERR        = -2,
     PARSE_IP_RET_FAIL            = -1,
     PARSE_IP_RET_SUCCESS         = 0,
     PARSE_IP_RET_INVALID         = 1,
     PARSE_IP_RET_DID_NOT_TRY     = 2,
-    PARSE_IP_RET_NOT_IMPLEMENTED = 3
+    PARSE_IP_RET_NOT_IMPLEMENTED = 3,
+    PARSE_IP_RET_EOF             = 4,
 };
 
 
