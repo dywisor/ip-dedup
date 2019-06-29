@@ -20,6 +20,15 @@ struct parse_ip_addr_data {
 };
 
 
+void parse_ip_addr_data_init_null (
+    struct parse_ip_addr_data* const pstate
+);
+
+void parse_ip_addr_data_init_free_data (
+    struct parse_ip_addr_data* const pstate
+);
+
+
 /**
  * parse_ip_addr_func()
  * prototype for parse_ip functions that convert a single input string

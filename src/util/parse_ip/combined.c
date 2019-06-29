@@ -11,6 +11,25 @@
 #include "../../ip.h"
 
 
+void parse_ip_addr_data_init_null (
+    struct parse_ip_addr_data* const pstate
+) {
+    pstate->addr_type = PARSE_IP_TYPE_NONE;
+
+    ip4_addr_init_null ( &(pstate->addr_v4) );
+    ip6_addr_init_null ( &(pstate->addr_v6) );
+}
+
+
+void parse_ip_addr_data_init_free_data (
+    struct parse_ip_addr_data* const pstate
+) {
+    if ( pstate == NULL ) { return; }
+
+    parse_ip_addr_data_init_null ( pstate );
+}
+
+
 int parse_ip4_addr_combined (
     char* const restrict line,
     const size_t slen,
