@@ -112,7 +112,6 @@ int ip_tree_builder_insert_from_stream (
     struct parse_ip_file_state pfile_state;
     int parse_ret;
     int ret;
-    bool one_hot;
 
     if (
         parse_ip_file_init_stream (
@@ -130,7 +129,6 @@ int ip_tree_builder_insert_from_stream (
         switch ( parse_ret ) {
             case PARSE_IP_RET_SUCCESS:
                 /* insert */
-                one_hot = false;
 
                 if ( (pfile_state.addr.addr_type & PARSE_IP_TYPE_IPV4) != 0 ) {
                     ret = ip4_tree_insert ( obj->v4, &(pfile_state.addr.addr_v4) );
@@ -138,19 +136,10 @@ int ip_tree_builder_insert_from_stream (
                         parse_ip_file_state_free_data ( &pfile_state );
                         return -1;
                     }
-                    one_hot = true;
                 }
 
                 if ( (pfile_state.addr.addr_type & PARSE_IP_TYPE_IPV6) != 0 ) {
                     ret = ip6_tree_insert ( obj->v6, &(pfile_state.addr.addr_v6) );
-                    if ( ret != 0 ) {
-                        parse_ip_file_state_free_data ( &pfile_state );
-                        return -1;
-                    }
-                    one_hot = true;
-                }
-
-                if ( ! one_hot ) {
                     if ( ret != 0 ) {
                         parse_ip_file_state_free_data ( &pfile_state );
                         return -1;
