@@ -27,6 +27,14 @@ enum {
 };
 
 
+enum {
+    PARSE_IP_TYPE_NONE  = 0x0,
+    PARSE_IP_TYPE_IPV4  = 0x1,
+    PARSE_IP_TYPE_IPV6  = 0x2,
+    PARSE_IP_TYPE_BOTH  = (PARSE_IP_TYPE_IPV4 | PARSE_IP_TYPE_IPV6)
+};
+
+
 #if 0
 /* hex parsing is not implemented yet. */
 int parse_ip_hexchr_to_int ( const char c );

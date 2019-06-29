@@ -7,13 +7,6 @@
 
 #include "../../ip.h"
 
-enum {
-    PARSE_IP_TYPE_NONE  = 0x0,
-    PARSE_IP_TYPE_IPV4  = 0x1,
-    PARSE_IP_TYPE_IPV6  = 0x2,
-    PARSE_IP_TYPE_BOTH  = (PARSE_IP_TYPE_IPV4 | PARSE_IP_TYPE_IPV6)
-};
-
 
 int parse_ip_mixed_addr (
     char* const line,

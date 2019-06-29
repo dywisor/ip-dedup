@@ -25,7 +25,7 @@ struct ip_tree_build_data {
     struct ip_tree* v4;
     struct ip_tree* v6;
 
-    parse_ip_addr_func  f_parse;
+    int tree_mode;
 };
 
 

@@ -6,7 +6,6 @@
 #include "parsefile.h"
 
 #include "common.h"
-#include "mixed.h"
 #include "combined.h"
 
 #include "../readfile.h"
