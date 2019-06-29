@@ -17,24 +17,6 @@ static int ip_tree_build_data_init_v4 ( struct ip_tree_build_data* const obj );
 static int ip_tree_build_data_init_v6 ( struct ip_tree_build_data* const obj );
 
 
-static int ip_tree_builder_parse_ip_v4 (
-    char* const restrict line,
-    const size_t slen,
-    struct ip_tree_builder_parse_data* const restrict pstate
-);
-
-static int ip_tree_builder_parse_ip_v6 (
-    char* const restrict line,
-    const size_t slen,
-    struct ip_tree_builder_parse_data* const restrict pstate
-);
-
-static int ip_tree_builder_parse_ip_mixed (
-    char* const restrict line,
-    const size_t slen,
-    struct ip_tree_builder_parse_data* const restrict pstate
-);
-
 
 static struct ip_tree_build_data* ip_tree_build_data_new_empty (void) {
     struct ip_tree_build_data* obj;
@@ -67,7 +49,7 @@ struct ip_tree_build_data* ip_tree_builder_new_v4 (void) {
 
     obj = ip_tree_build_data_new_empty();
     if ( obj != NULL ) {
-        obj->f_parse = ip_tree_builder_parse_ip_v4;
+        obj->f_parse = parse_ip4_addr_combined;
 
         if ( ip_tree_build_data_init_v4 ( obj ) != 0 ) {
             free ( obj );
@@ -84,7 +66,7 @@ struct ip_tree_build_data* ip_tree_builder_new_v6 (void) {
 
     obj = ip_tree_build_data_new_empty();
     if ( obj != NULL ) {
-        obj->f_parse = ip_tree_builder_parse_ip_v6;
+        obj->f_parse = parse_ip6_addr_combined;
 
         if ( ip_tree_build_data_init_v6 ( obj ) != 0 ) {
             free ( obj );
@@ -101,7 +83,7 @@ struct ip_tree_build_data* ip_tree_builder_new_mixed (void) {
 
     obj = ip_tree_build_data_new_empty();
     if ( obj != NULL ) {
-        obj->f_parse = ip_tree_builder_parse_ip_mixed;
+        obj->f_parse = parse_ip_addr_combined;
 
         if (
             ( ip_tree_build_data_init_v4 ( obj ) != 0 )
@@ -163,7 +145,7 @@ int ip_tree_builder_parse (
     FILE* const restrict input_stream,
     const bool keep_going
 ) {
-    struct ip_tree_builder_parse_data pstate;
+    struct parse_ip_addr_data pstate;
     int         ret;
     bool        one_hot;
     unsigned    keep_going_status;  /* 0x1 -> any success, 0x2 -> any invalid */
@@ -239,38 +221,3 @@ int ip_tree_builder_parse (
 }
 #undef ip_tree_builder_parse__return
 #undef ip_tree_builder_parse__free_buf
-
-
-static int ip_tree_builder_parse_ip_v4 (
-    char* const restrict line,
-    const size_t slen,
-    struct ip_tree_builder_parse_data* const restrict pstate
-) {
-    pstate->addr_type = PARSE_IP_TYPE_IPV4;
-
-    return parse_ip4_addr ( line, slen, &(pstate->addr_v4) );
-}
-
-static int ip_tree_builder_parse_ip_v6 (
-    char* const restrict line,
-    const size_t slen,
-    struct ip_tree_builder_parse_data* const restrict pstate
-) {
-    pstate->addr_type = PARSE_IP_TYPE_IPV6;
-
-    return parse_ip6_addr ( line, slen, &(pstate->addr_v6) );
-}
-
-static int ip_tree_builder_parse_ip_mixed (
-    char* const restrict line,
-    const size_t slen,
-    struct ip_tree_builder_parse_data* const restrict pstate
-) {
-    return parse_ip_mixed_addr (
-        line,
-        slen,
-        &(pstate->addr_type),
-        &(pstate->addr_v4),
-        &(pstate->addr_v6)
-    );
-}

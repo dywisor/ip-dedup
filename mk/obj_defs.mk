@@ -7,6 +7,7 @@ ODEF_UTIL_PARSE_IP += util/parse_ip/common
 ODEF_UTIL_PARSE_IP += util/parse_ip/ip4
 ODEF_UTIL_PARSE_IP += util/parse_ip/ip6
 ODEF_UTIL_PARSE_IP += util/parse_ip/mixed
+ODEF_UTIL_PARSE_IP += util/parse_ip/combined
 
 ODEF_IP  =
 #ODEF_IP += ip/base  # hdr only

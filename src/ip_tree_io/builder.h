@@ -9,30 +9,7 @@
 #include "../ip_tree.h"
 #include "../ip.h"
 
-struct ip_tree_build_data;
-struct ip_tree_builder_parse_data;
-
-
-/**
- * Buffer for parsing IP addresses.
- *
- * Some input strings may be both valid IPv4 and IPv6 addresses, e.g. "0/1",
- * so allocate separate space for both address types.
- *
- * Additionally, store the type of the parsed address.
- * */
-struct ip_tree_builder_parse_data {
-    int addr_type;
-    struct ip4_addr_t addr_v4;
-    struct ip6_addr_t addr_v6;
-};
-
-
-typedef int (*ip_tree_builder_parse_ip_func) (
-    char* const restrict,
-    const size_t,
-    struct ip_tree_builder_parse_data* const restrict
-);
+#include "../util/parse_ip.h"
 
 
 /**
@@ -48,7 +25,7 @@ struct ip_tree_build_data {
     struct ip_tree* v4;
     struct ip_tree* v6;
 
-    ip_tree_builder_parse_ip_func  f_parse;
+    parse_ip_addr_func  f_parse;
 };
 
 
