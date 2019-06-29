@@ -266,7 +266,7 @@ static int ip_tree_builder_parse_ip_mixed (
     const size_t slen,
     struct ip_tree_builder_parse_data* const restrict pstate
 ) {
-    return parse_ip_addr (
+    return parse_ip_mixed_addr (
         line,
         slen,
         &(pstate->addr_type),

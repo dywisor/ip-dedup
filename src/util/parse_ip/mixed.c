@@ -13,12 +13,14 @@
 #include "../../ip.h"
 
 
-static int parse_ip_guess_type ( const char* const line, int* const type_result );
+static int parse_ip_mixed_guess_type (
+    const char* const line, int* const type_result
+);
 
 static ip_addr_variant_t _parse_ip_mixed_buf;
 
 
-int parse_ip_addr (
+int parse_ip_mixed_addr (
     char* const line,
     const size_t slen,
     int* const type_result,
@@ -35,13 +37,13 @@ int parse_ip_addr (
         return PARSE_IP_RET_INVALID;
     }
 
-    return parse_ip_addr_split (
+    return parse_ip_mixed_addr_split (
         line, prefixlen_str, type_result, addr_v4, addr_v6
     );
 }
 
 
-int parse_ip_addr_split (
+int parse_ip_mixed_addr_split (
     char* const addr_str,
     const char* const prefixlen_str,
     int* const type_result,
@@ -55,7 +57,7 @@ int parse_ip_addr_split (
 
     *type_result = PARSE_IP_TYPE_NONE;
 
-    ret_guess = parse_ip_guess_type ( addr_str, &guessed_type );
+    ret_guess = parse_ip_mixed_guess_type ( addr_str, &guessed_type );
     if ( ret_guess != PARSE_IP_RET_SUCCESS ) { return ret_guess; }
 
     /* parse IPv4 */
@@ -95,7 +97,7 @@ int parse_ip_addr_split (
 }
 
 
-static int parse_ip_guess_type (
+static int parse_ip_mixed_guess_type (
     const char* const line,
     int* const type_result
 ) {

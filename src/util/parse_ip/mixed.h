@@ -15,7 +15,7 @@ enum {
 };
 
 
-int parse_ip_addr (
+int parse_ip_mixed_addr (
     char* const line,
     const size_t slen,
     int* const type_result,
@@ -24,7 +24,7 @@ int parse_ip_addr (
 );
 
 
-int parse_ip_addr_split (
+int parse_ip_mixed_addr_split (
     char* const addr_str,
     const char* const prefixlen_str,
     int* const type_result,
