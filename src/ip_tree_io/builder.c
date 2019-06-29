@@ -8,7 +8,7 @@
 #include "../ip_tree.h"
 #include "../ip.h"
 
-#include "../util/strutil.h"
+#include "../util/readfile.h"
 #include "../util/parse_ip.h"
 
 
@@ -131,7 +131,7 @@ struct ip_tree* ip_tree_builder_steal_v6 (
 
 #define ip_tree_builder_parse__free_buf()  \
     do { \
-        if ( line != NULL ) { free(line); line = NULL; } \
+        readfile_state_free_data ( &rstate ); \
     } while (0)
 
 #define ip_tree_builder_parse__return(_retcode)  \
@@ -146,58 +146,53 @@ int ip_tree_builder_parse (
     const bool keep_going
 ) {
     struct parse_ip_addr_data pstate;
+    struct readfile_state rstate;
+
     int         ret;
     bool        one_hot;
     unsigned    keep_going_status;  /* 0x1 -> any success, 0x2 -> any invalid */
-    size_t      line_size;
-    ssize_t     nread;
-    size_t      slen;
-    char*       line;
-    char*       sline;
 
-    line = NULL;
-    line_size = 0;
+    /* no-init pstate */
+
+    if ( readfile_init_stream ( &rstate, input_stream ) != 0 ) { return -1; }
+
     keep_going_status = 0;
 
-    while ( ( nread = getline ( &line, &line_size, input_stream ) ) != -1 ) {
-        slen = (size_t) nread;
-        sline = str_strip ( line, &slen );
+    while ( readfile_next_effective ( &rstate ) == READFILE_RET_LINE ) {
 
-        if ( *sline != '\0' ) {
-            pstate.addr_type = PARSE_IP_TYPE_NONE;
+        pstate.addr_type = PARSE_IP_TYPE_NONE;
 
-            ret = obj->f_parse ( sline, slen, &pstate );
-            switch ( ret ) {
-                case PARSE_IP_RET_SUCCESS:
-                    one_hot = false;
+        ret = obj->f_parse ( rstate.line, rstate.line_len, &pstate );
+        switch ( ret ) {
+            case PARSE_IP_RET_SUCCESS:
+                one_hot = false;
 
-                    if ( (pstate.addr_type & PARSE_IP_TYPE_IPV4) != 0 ) {
-                        ret = ip4_tree_insert ( obj->v4, &(pstate.addr_v4) );
-                        if ( ret != 0 ) { ip_tree_builder_parse__return ( -1 ); }
-                        one_hot = true;
-                    }
+                if ( (pstate.addr_type & PARSE_IP_TYPE_IPV4) != 0 ) {
+                    ret = ip4_tree_insert ( obj->v4, &(pstate.addr_v4) );
+                    if ( ret != 0 ) { ip_tree_builder_parse__return ( -1 ); }
+                    one_hot = true;
+                }
 
-                    if ( (pstate.addr_type & PARSE_IP_TYPE_IPV6) != 0 ) {
-                        ret = ip6_tree_insert ( obj->v6, &(pstate.addr_v6) );
-                        if ( ret != 0 ) { ip_tree_builder_parse__return ( -1 ); }
-                        one_hot = true;
-                    }
-                    if ( ! one_hot ) { ip_tree_builder_parse__return ( -1 ); }
-                    keep_going_status |= 0x1;
-                    break;
+                if ( (pstate.addr_type & PARSE_IP_TYPE_IPV6) != 0 ) {
+                    ret = ip6_tree_insert ( obj->v6, &(pstate.addr_v6) );
+                    if ( ret != 0 ) { ip_tree_builder_parse__return ( -1 ); }
+                    one_hot = true;
+                }
+                if ( ! one_hot ) { ip_tree_builder_parse__return ( -1 ); }
+                keep_going_status |= 0x1;
+                break;
 
-                case PARSE_IP_RET_INVALID:
-                    if ( keep_going ) {
-                        keep_going_status |= 0x2;
-                    } else {
-                        ip_tree_builder_parse__return ( ret );
-                    }
-                    break;
+            case PARSE_IP_RET_INVALID:
+                if ( keep_going ) {
+                    keep_going_status |= 0x2;
+                } else {
+                    ip_tree_builder_parse__return ( ret );
+                }
+                break;
 
-                default:
-                    ip_tree_builder_parse__return ( -1 );
-                    break;
-            }
+            default:
+                ip_tree_builder_parse__return ( -1 );
+                break;
         }
     }
 
