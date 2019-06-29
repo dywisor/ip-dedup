@@ -28,6 +28,8 @@ void readfile_state_init_null ( struct readfile_state* const rstate ) {
 
 
 void readfile_state_free_data ( struct readfile_state* const rstate ) {
+    if ( rstate == NULL ) { return; }
+
     if ( rstate->line_buf != NULL ) {
         free ( rstate->line_buf = NULL );
     }
