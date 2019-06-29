@@ -35,6 +35,16 @@ enum {
 };
 
 
+/**
+ * Checks whether the given IP type code is valid.
+ *
+ * @param type      IP type code (PARSE_IP_TYPE)
+ *
+ * @return  true if valid, else false
+ * */
+bool parse_ip_check_type_valid ( const int type );
+
+
 #if 0
 /* hex parsing is not implemented yet. */
 int parse_ip_hexchr_to_int ( const char c );

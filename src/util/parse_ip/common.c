@@ -13,6 +13,19 @@ static int parse_ip_strtol (
 );
 
 
+bool parse_ip_check_type_valid ( const int type ) {
+   switch ( type ) {
+      case PARSE_IP_TYPE_IPV4:
+      case PARSE_IP_TYPE_IPV6:
+      case PARSE_IP_TYPE_BOTH:
+         return true;
+
+      default:
+         return false;
+   }
+}
+
+
 #if 0
 int parse_ip_hexchr_to_int ( const char c ) {
    switch ( c ) {
