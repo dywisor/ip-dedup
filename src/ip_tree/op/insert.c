@@ -4,6 +4,7 @@
 #include <errno.h>
 
 #include "insert.h"
+#include "find.h"
 
 #include "../data/node.h"
 #include "../data/typedesc.h"
@@ -15,6 +16,12 @@
 static int _ip_tree_insert (
    struct ip_tree* const restrict tree,
    const ip_addr_variant_t* const restrict var_addr
+);
+
+static int _ip_tree_insert_walkdown_create (
+   struct ip_tree* const restrict tree,
+   const ip_addr_variant_t* const restrict var_addr,
+   struct ip_tree_node* const restrict parent
 );
 
 
@@ -73,76 +80,83 @@ static int _ip_tree_insert (
    struct ip_tree* const restrict tree,
    const ip_addr_variant_t* const restrict var_addr
 ) {
-   /* determine prefixlen == tree depth of var_addr */
+   int find_ret;
+   struct ip_tree_node* parent;
+   struct ip_tree_node* node;
+
+   /*
+    * find anchor
+    * - if addr already in the tree: mark as hot
+    * - otherwise: start at depth-most existing parent and create nodes downto addr
+    * */
+   find_ret = ip_tree_find ( tree, var_addr, &parent, &node );
+
+   switch ( find_ret ) {
+      case IP_TREE_FIND_HIT_HOT_PARENT:
+         /* addr to be inserted overshadowed by hot (grand)parent */
+         return 0;
+
+      case IP_TREE_FIND_HIT:
+         if ( ! (node->hot) ) {
+            /* mark node as hot */
+            node->hot = true;
+
+            /* purge intermediate child nodes (if they exist) */
+            tree->tdesc->f_destroy ( &(node->left) );
+            tree->tdesc->f_destroy ( &(node->right) );
+         }
+         return 0;
+
+      case IP_TREE_FIND_MISS:
+         return _ip_tree_insert_walkdown_create ( tree, var_addr, parent );
+
+      default:
+         return -1;
+   }
+}
+
+
+static int _ip_tree_insert_walkdown_create (
+   struct ip_tree* const restrict tree,
+   const ip_addr_variant_t* const restrict var_addr,
+   struct ip_tree_node* const restrict parent
+) {
    const ip_prefixlen_t prefixlen = (
       tree->tdesc->f_get_addr_prefixlen ( var_addr )
    );
 
-   /*
-    * index 0..(MAX_PREFIXLEN - 1) that indicates how many bits are set
-    * in the netmask of the current node.
-    * This is equivalent to the depth in the data structure.
-    * */
    ip_prefixlen_t cur_prefixpos;
 
-   /* current node in the subnet path - shared, do not free */
    struct ip_tree_node* cur_node;
-
-   /* pointer to the next node in the subnet path, child node of cur_node */
-   /* shared, do not free */
    struct ip_tree_node* sub_node;
 
-   /* prefixlen should be within valid range (always >= 0 due to uint) */
-   if ( prefixlen > (tree->tdesc->max_prefixlen) ) {
-      errno = EINVAL;
-      return -1;
-   }
-
-   /*
-    * create nodes as needed, mark them as intermediate for now
-    *
-    * start at level 0, cur_node points to the target node after this loop
-    * */
-   cur_node = tree->root;
-   for ( cur_prefixpos = 0; cur_prefixpos < prefixlen; cur_prefixpos++ ) {
-      if ( cur_node->hot ) {
-         /*
-          * addr to be inserted overshadowed by hot node
-          * (at upper level or target node already hot)
-          * */
-         return 0;
-
-      } else if (
-         ! (tree->tdesc->f_check_addr_bit_set) ( var_addr, cur_prefixpos + 1 )
-      ) {
-         /* bit is unset -> follow left path, create if necessary */
-         sub_node = cur_node->left;
-         if ( sub_node == NULL ) {
-
-            sub_node = tree->tdesc->f_new_child ( cur_node, false, false );
-            if ( sub_node == NULL ) { return -1; }
-            cur_node->left = sub_node;
-         }
-
-      } else {
-         /* bit is set -> follow right path, create if necessary */
-         sub_node = cur_node->right;
-         if ( sub_node == NULL ) {
-            sub_node = tree->tdesc->f_new_child ( cur_node, true, false );
-            if ( sub_node == NULL ) { return -1; }
-            cur_node->right = sub_node;
-         }
-      }
+   cur_node = NULL;
+   sub_node = parent;
+   for (
+      cur_prefixpos = tree->tdesc->f_get_addr_prefixlen(&(sub_node->addr));
+      cur_prefixpos < prefixlen;
+      cur_prefixpos++
+   ) {
+      const ip_prefixlen_t sub_prefixpos = ( cur_prefixpos + 1 );
 
       cur_node = sub_node;
+
+      if ( ! ( tree->tdesc->f_check_addr_bit_set) ( var_addr, sub_prefixpos ) ) {
+         /* bit is unset -> create left */
+         sub_node = tree->tdesc->f_new_child ( cur_node, false, false );
+         if ( sub_node == NULL ) { return -1; }
+         cur_node->left = sub_node;
+
+      } else {
+         /* bit is set -> create right */
+         sub_node = tree->tdesc->f_new_child ( cur_node, true, false );
+         if ( sub_node == NULL ) { return -1; }
+         cur_node->right = sub_node;
+      }
    }
 
    /* mark most recent node as hot */
-   cur_node->hot = true;
-
-   /* purge intermediate child nodes (if they exist) */
-   tree->tdesc->f_destroy ( &(cur_node->left) );
-   tree->tdesc->f_destroy ( &(cur_node->right) );
+   sub_node->hot = true;
 
    return 0;
 }
