@@ -17,6 +17,7 @@
  *
  * */
 enum {
+    PARSE_IP_RET_BAD_INFILE      = -3,
     PARSE_IP_RET_READ_ERR        = -2,
     PARSE_IP_RET_FAIL            = -1,
     PARSE_IP_RET_SUCCESS         = 0,
