@@ -1,1 +1,1 @@
-_CC_OPT_STATIC = -static
+CC_OPTS_EXTRA += -static
