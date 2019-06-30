@@ -23,6 +23,9 @@ all: ip-dedup
 
 .include "mk/clean_target.mk"
 
+.include "mk/install_vars.mk"
+.include "mk/install_target.mk"
+
 
 ODEP_IP_DEDUP := ${OBUNDLE_APP_IP_DEDUP:%=src/%.o}
 

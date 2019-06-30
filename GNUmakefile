@@ -25,6 +25,9 @@ include $(MK_INCLUDE)/obj_defs.mk
 
 include $(MK_INCLUDE)/clean_target.mk
 
+include $(MK_INCLUDE)/install_vars.mk
+include $(MK_INCLUDE)/install_target.mk
+
 
 PHONY += ip-dedup
 ip-dedup: $(O)/ip-dedup
