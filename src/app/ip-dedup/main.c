@@ -31,6 +31,11 @@ static int main_inner (
    struct ipdedup_globals* const restrict g, int argc, char** argv
 );
 
+static int main_push_infile (
+   struct ipdedup_globals* const restrict g,
+   struct dynarray* const restrict infiles,
+   const char* const arg
+);
 
 /**
  * Part of the inner main function, parses input files / stdin
@@ -157,6 +162,18 @@ int main ( int argc, char** argv ) {
    } while (0)
 
 
+static int main_push_infile (
+   struct ipdedup_globals* const restrict g,
+   struct dynarray* const restrict infiles,
+   const char* const arg
+) {
+   if ( dynarray_append ( infiles, (void*) arg ) != 0 ) {
+      return EX_OSERR;
+   }
+
+   return 0;
+}
+
 static int main_interpret_parse_ret ( const int parse_ret ) {
    switch ( parse_ret ) {
       case PARSE_IP_RET_SUCCESS:
@@ -215,6 +232,7 @@ static int main_inner (
    static const char* const PROG_OPTIONS = "46ahiko:p:";
 
    int opt;
+   int ret;
 
    g->prog_name = get_prog_name ( argv[0] );
 
@@ -269,9 +287,8 @@ static int main_inner (
 
             } else {
                /* push optarg to array (also if optarg is stdin marker "-") */
-               if ( dynarray_append ( g->purge_infiles, (void*) optarg ) != 0 ) {
-                  return EX_OSERR;
-               }
+               ret = main_push_infile ( g, g->purge_infiles, optarg );
+               if ( ret != 0 ) { return ret; }
             }
             break;
 
@@ -294,8 +311,9 @@ static int main_inner (
             MAIN_PRINT_USAGE_ERR ( "expected non-empty positional argument." );
             return EX_USAGE;
 
-         } else if ( dynarray_append ( g->infiles, (void*) arg ) != 0 ) {
-            return EX_OSERR;
+         } else {
+            ret = main_push_infile ( g, g->infiles, arg );
+            if ( ret != 0 ) { return ret; }
          }
       }
    }
