@@ -11,6 +11,8 @@ PHONY =
 PHONY += all
 all: ip-dedup
 
+include $(MK_INCLUDE)/install_vars.mk
+
 include $(MK_INCLUDE)/warnflags_base.mk
 ifeq ($(NO_WERROR),)
 include $(MK_INCLUDE)/warnflags_no_werror.mk
@@ -22,8 +24,6 @@ endif
 
 include $(MK_INCLUDE)/compile_c.mk
 include $(MK_INCLUDE)/obj_defs.mk
-
-include $(MK_INCLUDE)/install_vars.mk
 
 include $(MK_INCLUDE)/common_targets.mk
 
