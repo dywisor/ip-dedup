@@ -30,6 +30,8 @@ static struct ip_tree_build_data* ip_tree_build_data_new_empty (void) {
         obj->v4         = NULL;
         obj->v6         = NULL;
         obj->tree_mode  = PARSE_IP_TYPE_NONE;
+
+        obj->did_read_stdin = false;
     }
 
     return obj;
@@ -138,6 +140,11 @@ int ip_tree_builder_parse_stream_do (
     int parse_ret;
     int ret;
 
+    if ( (input_stream == stdin) && (obj->did_read_stdin) ) {
+        /* will not read stdin twice */
+        return PARSE_IP_RET_BAD_INFILE;
+    }
+
     if (
         parse_ip_file_init_stream (
             &pfile_state, input_stream, obj->tree_mode
@@ -148,6 +155,8 @@ int ip_tree_builder_parse_stream_do (
 
     /* init cfg */
     pfile_state.cfg.keep_going = keep_going;
+
+    if ( input_stream == stdin ) { obj->did_read_stdin = true; }
 
     do {
         parse_ret = parse_ip_file_next ( &pfile_state );

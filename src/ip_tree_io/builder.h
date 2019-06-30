@@ -26,6 +26,8 @@ struct ip_tree_build_data {
     struct ip_tree* v6;
 
     int tree_mode;
+
+    bool did_read_stdin;
 };
 
 
