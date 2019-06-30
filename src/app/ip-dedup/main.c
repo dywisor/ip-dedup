@@ -563,6 +563,7 @@ static void print_usage (
          "  For each line in the input (files),\n"
          "  leading and trailing whitespace is removed.\n"
          "  Empty lines, possibly caused by this conversion, are silently ignored.\n"
+         "  Likewise, lines starting with a '#' char are ignored, too.\n"
          "\n"
          "  The keep-going mode (-k) allows for invalid input.\n"
          "  However, if no input network specification could be parsed\n"
