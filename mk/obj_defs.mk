@@ -28,6 +28,7 @@ ODEF_IP_TREE += ip_tree/op/collapse
 ODEF_IP_TREE += ip_tree/op/collect_ip4
 ODEF_IP_TREE += ip_tree/op/collect_ip6
 ODEF_IP_TREE += ip_tree/op/invert
+ODEF_IP_TREE += ip_tree/op/find
 
 ODEF_IP_TREE_IO  =
 ODEF_IP_TREE_IO += ip_tree_io/builder
