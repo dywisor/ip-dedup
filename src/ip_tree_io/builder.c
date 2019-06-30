@@ -236,7 +236,7 @@ int ip_tree_builder_parse_files_do (
 
 
 
-int ip_tree_builder_insert_from_stream (
+int ip_tree_builder_parse_stream_do_insert (
     struct ip_tree_build_data* const restrict obj,
     FILE* const restrict input_stream,
     const bool keep_going
@@ -250,7 +250,7 @@ int ip_tree_builder_insert_from_stream (
 }
 
 
-int ip_tree_builder_insert_from_files (
+int ip_tree_builder_parse_files_do_insert (
     struct ip_tree_build_data* const restrict obj,
     struct dynarray* const input_files,
     const bool keep_going
