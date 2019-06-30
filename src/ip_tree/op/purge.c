@@ -24,7 +24,6 @@ static int _ip_tree_purge (
 
 static int _ip_tree_purge_replace_node (
    struct ip_tree* const restrict tree,
-   const ip_addr_variant_t* const restrict var_addr,
    struct ip_tree_node* const parent,
    struct ip_tree_node* const node
 );
@@ -93,7 +92,7 @@ static int _ip_tree_purge (
             return _ip_tree_purge_replace_parent ( tree, var_addr, parent );
 
         case IP_TREE_FIND_HIT:
-            return _ip_tree_purge_replace_node ( tree, var_addr, parent, node );
+            return _ip_tree_purge_replace_node ( tree, parent, node );
 
         case IP_TREE_FIND_MISS:
             return 0;
@@ -106,7 +105,6 @@ static int _ip_tree_purge (
 
 static int _ip_tree_purge_replace_node (
    struct ip_tree* const restrict tree,
-   const ip_addr_variant_t* const restrict var_addr,
    struct ip_tree_node* const parent,
    struct ip_tree_node* const node
 ) {
