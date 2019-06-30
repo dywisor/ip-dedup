@@ -12,7 +12,7 @@ all: ip-dedup
 .include "mk/install_vars.mk"
 
 .include "mk/warnflags_base.mk"
-.ifdef NO_WERROR
+.if !defined(NO_WERROR) || ${NO_WERROR} == ""
 .include "mk/warnflags_no_werror.mk"
 .endif
 
