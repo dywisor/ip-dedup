@@ -98,22 +98,6 @@ int parse_ip_file_init_stream (
 }
 
 
-int parse_ip_file_init_file (
-    struct parse_ip_file_state* const pfile_state,
-    const char* const input_file,
-    const int parse_mode
-) {
-    parse_ip_file_state_init_null ( pfile_state );
-
-    if ( parse_ip_file_init_parse_mode ( pfile_state, parse_mode ) != 0 ) {
-        return -1;
-    }
-
-    /* reinit readfile state, no free() on error necessary */
-    return readfile_init_file ( &(pfile_state->_file), input_file );
-}
-
-
 static int _parse_ip_file_next (
     struct parse_ip_file_state* const pfile_state
 ) {

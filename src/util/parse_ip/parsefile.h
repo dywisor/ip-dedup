@@ -53,13 +53,6 @@ int parse_ip_file_init_stream (
 );
 
 
-int parse_ip_file_init_file (
-    struct parse_ip_file_state* const pfile_state,
-    const char* const input_file,
-    const int parse_mode
-);
-
-
 int parse_ip_file_next (
     struct parse_ip_file_state* const pfile_state
 );
