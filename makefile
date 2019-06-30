@@ -11,6 +11,12 @@ all: ip-dedup
 
 .include "mk/install_vars.mk"
 
+.if !defined(IPDEDUP_DATADIR) || ${IPDEDUP_DATADIR} == ""
+CC_OPTS_EXTRA += -UIPDEDUP_DATADIR
+.else
+CC_OPTS_EXTRA += -DIPDEDUP_DATADIR=\"$(IPDEDUP_DATADIR)\"
+.endif
+
 .include "mk/warnflags_base.mk"
 .if !defined(NO_WERROR) || ${NO_WERROR} == ""
 .include "mk/warnflags_no_werror.mk"

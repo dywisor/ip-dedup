@@ -13,6 +13,12 @@ all: ip-dedup
 
 include $(MK_INCLUDE)/install_vars.mk
 
+ifeq ("","$(IPDEDUP_DATADIR)")
+CC_OPTS_EXTRA += -UIPDEDUP_DATADIR
+else
+CC_OPTS_EXTRA += -DIPDEDUP_DATADIR=\"$(IPDEDUP_DATADIR)\"
+endif
+
 include $(MK_INCLUDE)/warnflags_base.mk
 ifeq ($(NO_WERROR),)
 include $(MK_INCLUDE)/warnflags_no_werror.mk
