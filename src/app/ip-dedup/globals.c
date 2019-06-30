@@ -8,6 +8,7 @@
 #include "../../ip.h"
 #include "../../ip_tree.h"
 #include "../../ip_tree_io/builder.h"
+#include "../../util/parse_ip/common.h"
 
 
 int ipdedup_globals_init ( struct ipdedup_globals* const restrict g ) {

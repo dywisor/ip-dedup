@@ -9,7 +9,7 @@
 #include "../../ip.h"
 #include "../../ip_tree.h"
 #include "../../ip_tree_io/builder.h"
-#include "../../util/parse_ip/mixed.h"
+#include "../../util/parse_ip/common.h"
 
 /**
  * mode of tree operations, choose from
