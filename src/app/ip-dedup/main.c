@@ -151,11 +151,6 @@ int main ( int argc, char** argv ) {
 }
 
 
-#define MAIN_PRINT_USAGE_ERR_TERSE(_msg)  \
-   do {  \
-      fprintf ( stderr, "Error: %s\n", (_msg) );  \
-   } while (0)
-
 #define MAIN_PRINT_USAGE_ERR(_msg)  \
    do {  \
       fprintf ( stderr, "Error: %s\n\n", (_msg) ); \
@@ -220,7 +215,7 @@ static int main_interpret_parse_ret ( const int parse_ret ) {
          return 0;
 
       case PARSE_IP_RET_BAD_INFILE_DUP:
-         MAIN_PRINT_USAGE_ERR_TERSE ( "will not read stdin twice." );
+         fprintf ( stderr, "Error: will not read stdin twice.\n" );
          return EX_USAGE;
 
       case PARSE_IP_RET_BAD_INFILE:
@@ -449,7 +444,7 @@ static int main_run (
       ip_tree_destroy ( &purge_tree_v6 );
 
       if ( ret != 0 ) {
-         MAIN_PRINT_USAGE_ERR_TERSE ( "failed to purge networks" );
+         fprintf ( stderr, "Error: failed to purge networks\n" );
          return EX_SOFTWARE;
       }
    }
@@ -476,7 +471,6 @@ static int main_run (
 
 
 #undef MAIN_PRINT_USAGE_ERR
-#undef MAIN_PRINT_USAGE_ERR_TERSE
 
 static int main_parse_dedup_to_tree (
    struct dynarray* const restrict infiles,
