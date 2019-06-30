@@ -3,9 +3,8 @@ S := $(CURDIR)
 SRC = $(S)/src
 MK_INCLUDE = $(S)/mk
 
-O := $(S)/build
-O_OBJ = $(O)/obj
-O_BIN = $(O)/bin
+O := $(S)/obj
+O_OBJ = $(O)/src
 
 all: ip-dedup
 
@@ -23,20 +22,20 @@ include $(MK_INCLUDE)/compile_c.mk
 include $(MK_INCLUDE)/obj_defs.mk
 
 
-ip-dedup: $(O_BIN)/ip-dedup
+ip-dedup: $(O)/ip-dedup
 
 $(O):
 	mkdir -p -- $@
 
-$(O_BIN) $(O_OBJ): | $(O)
+$(O_OBJ):
 	mkdir -p -- $@
 
 $(O_OBJ)/%.o: $(SRC)/%.c $(wildcard $(SRC)/%.h) | $(O_OBJ)
 	mkdir -p -- $(@D)
 	$(COMPILE_C) $< -o $@
 
-$(O_BIN)/ip-dedup: \
-	$(foreach f,$(OBUNDLE_APP_IP_DEDUP),$(O_OBJ)/$(f).o $(wildcard $(SRC)/$(f).h)) | $(O_BIN)
+$(O)/ip-dedup: \
+	$(foreach f,$(OBUNDLE_APP_IP_DEDUP),$(O_OBJ)/$(f).o $(wildcard $(SRC)/$(f).h)) | $(O)
 
 	$(LINK_O) $(filter-out %.h,$^) -o $@
 
