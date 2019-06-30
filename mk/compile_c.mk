@@ -3,7 +3,7 @@ TARGET_CC    = $(CROSS_COMPILE)$(CC)
 
 CC_OPTS      =
 
-_OPTIFLAGS   = -O2
+_OPTIFLAGS   = -O2 -pipe
 _OPTIFLAGS  += $(OPTIMIZE)
 
 _WARNFLAGS ?=
