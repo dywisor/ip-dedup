@@ -9,9 +9,12 @@
 #include "../data/typedesc.h"
 #include "../data/tree.h"
 
+#include "../../ip.h"
+
 
 static void _ip_tree_collapse (
    const struct ip_tree_typedesc* const restrict tdesc,
+   const ip_prefixlen_t autocol_prefixlen,
    struct ip_tree_node* const restrict node
 );
 
@@ -22,7 +25,7 @@ int ip_tree_collapse ( struct ip_tree* const restrict tree ) {
       return -1;
 
    } else {
-      _ip_tree_collapse ( tree->tdesc, tree->root );
+      _ip_tree_collapse ( tree->tdesc, tree->auto_collapse_prefixlen, tree->root );
       return 0;
    }
 }
@@ -30,6 +33,7 @@ int ip_tree_collapse ( struct ip_tree* const restrict tree ) {
 
 static void _ip_tree_collapse (
    const struct ip_tree_typedesc* const restrict tdesc,
+   const ip_prefixlen_t autocol_prefixlen,
    struct ip_tree_node* const restrict node
 ) {
    /* whether to mark this node as hot and consume subnets */
@@ -39,14 +43,21 @@ static void _ip_tree_collapse (
       /* collapse now, no recursion -- this should be a no-op */
       can_collapse = true;
 
+   } else if (
+      ( autocol_prefixlen > 0 )
+      && ( tdesc->f_get_addr_prefixlen ( &(node->addr) ) >= autocol_prefixlen )
+   ) {
+      /* ">=" comparison for trees rooted at prefixlen > 0 */
+      can_collapse = true;
+
    } else {
       /* collapse subnets first */
       if ( node->left != NULL ) {
-         _ip_tree_collapse ( tdesc, node->left );  /* recursive */
+         _ip_tree_collapse ( tdesc, autocol_prefixlen, node->left );  /* recursive */
       }
 
       if ( node->right != NULL ) {
-         _ip_tree_collapse ( tdesc, node->right );  /* recursive */
+         _ip_tree_collapse ( tdesc, autocol_prefixlen, node->right );  /* recursive */
       }
 
       /* collapse to supernet if both subnets are hot */

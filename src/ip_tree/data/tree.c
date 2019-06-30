@@ -14,6 +14,8 @@ static int _ip_tree_init_null ( struct ip_tree* const restrict tree ) {
    tree->root = tree->tdesc->f_new_null();
    if ( tree->root == NULL ) { return -1; }
 
+   tree->auto_collapse_prefixlen = 0;
+
    return 0;
 }
 
@@ -58,4 +60,11 @@ void ip_tree_destroy ( struct ip_tree** const restrict tree_ptr ) {
       free ( *tree_ptr );
       *tree_ptr = NULL;
    }
+}
+
+void ip_tree_set_auto_collapse (
+   struct ip_tree* const restrict tree,
+   const ip_prefixlen_t prefixlen
+) {
+   tree->auto_collapse_prefixlen = prefixlen;
 }

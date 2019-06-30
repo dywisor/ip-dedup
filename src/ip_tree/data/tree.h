@@ -8,11 +8,16 @@
 #include "node.h"
 #include "typedesc.h"
 
+#include "../../ip.h"
+
+
 struct ip_tree {
    /* type descriptor */
    const struct ip_tree_typedesc* tdesc;
 
    struct ip_tree_node* root;
+
+   ip_prefixlen_t auto_collapse_prefixlen;
 };
 
 
@@ -49,5 +54,10 @@ struct ip_tree* ip6_tree_new (void);
  * */
 void ip_tree_destroy ( struct ip_tree** const restrict tree_ptr );
 
+
+void ip_tree_set_auto_collapse (
+   struct ip_tree* const restrict tree,
+   const ip_prefixlen_t prefixlen
+);
 
 #endif  /* _HAVE_IP_TREE_DATA_TREE_H_ */
