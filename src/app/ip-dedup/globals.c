@@ -26,6 +26,7 @@ int ipdedup_globals_init ( struct ipdedup_globals* const restrict g ) {
     g->close_outstream  = false;
 
     g->infiles          = NULL;
+    g->purge_infiles    = NULL;
 
     g->want_invert      = false;
     g->want_keep_going  = false;
@@ -48,6 +49,10 @@ void ipdedup_globals_free ( struct ipdedup_globals* const restrict g ) {
 
     if ( g->infiles != NULL ) {
         dynarray_free_ptr ( &(g->infiles) );
+    }
+
+    if ( g->purge_infiles != NULL ) {
+        dynarray_free_ptr ( &(g->purge_infiles) );
     }
 }
 

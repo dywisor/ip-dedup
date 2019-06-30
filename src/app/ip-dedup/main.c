@@ -52,6 +52,17 @@ __attribute__((warn_unused_result))
 static int main_interpret_parse_ret ( const int parse_ret );
 
 
+__attribute__((warn_unused_result))
+static int main_parse_dedup_to_tree (
+   struct dynarray* const restrict infiles,
+   const int tree_mode,
+   const bool keep_going,
+   struct ip_tree** const restrict tree_v4_out,
+   struct ip_tree** const restrict tree_v6_out
+);
+
+
+
 /**
  * tree operations for the inner main function.
  * */
@@ -201,7 +212,7 @@ static int main_inner_parse_input (
 static int main_inner (
    struct ipdedup_globals* const restrict g, int argc, char** argv
 ) {
-   static const char* const PROG_OPTIONS = "46ahiko:";
+   static const char* const PROG_OPTIONS = "46ahiko:p:";
 
    int opt;
 
@@ -244,6 +255,25 @@ static int main_inner (
 
             } else {
                g->outfile = optarg;
+            }
+            break;
+
+         case 'p':
+            if ( (optarg == NULL) || (*optarg == '\0') ) {
+               MAIN_PRINT_USAGE_ERR ( "-p needs a non-empty argument." );
+               return EX_USAGE;
+
+            } else {
+               /* push optarg to array (also if optarg is stdin marker "-") */
+               if ( g->purge_infiles == NULL ) {
+                  g->purge_infiles = new_dynarray ( 1 );
+                  if ( g->purge_infiles == NULL ) { return EX_OSERR; }
+                  dynarray_set_data_readonly ( g->purge_infiles );
+               }
+
+               if ( dynarray_append ( g->purge_infiles, (void*) optarg ) != 0 ) {
+                  return EX_OSERR;
+               }
             }
             break;
 
@@ -298,37 +328,65 @@ static int main_run (
    struct ipdedup_globals* const restrict g
 ) {
    int ret;
+   struct ip_tree* purge_tree_v4;
+   struct ip_tree* purge_tree_v6;
+
+   purge_tree_v4 = NULL;
+   purge_tree_v6 = NULL;
 
    /* parse input */
    ret = main_inner_parse_input ( g );  /* uses optind */
    if ( ret != 0 ) {
-      MAIN_PRINT_USAGE_ERR ( "Failed to parse input" );
+      MAIN_PRINT_USAGE_ERR ( "failed to parse input" );
       return ret;
    }
 
-   /* IPv4 operations */
-   if ( g->tree_v4 != NULL ) {
-      /* collapse tree */
-      ip_tree_collapse ( g->tree_v4 );
+   /* collapse tree */
+   if ( g->tree_v4 != NULL ) { ip_tree_collapse ( g->tree_v4 ); }
+   if ( g->tree_v6 != NULL ) { ip_tree_collapse ( g->tree_v6 ); }
 
-      /* invert if requested */
-      if ( g->want_invert ) {
+   /* invert if requested */
+   if ( g->want_invert ) {
+      if ( g->tree_v4 != NULL ) {
          if ( ip_tree_invert ( g->tree_v4 ) != 0 ) {
+            return EX_SOFTWARE;
+         }
+      }
+
+      if ( g->tree_v6 != NULL ) {
+         if ( ip_tree_invert ( g->tree_v6 ) != 0 ) {
             return EX_SOFTWARE;
          }
       }
    }
 
-   /* IPv6 operations */
-   if ( g->tree_v6 != NULL ) {
-      /* collapse tree */
-      ip_tree_collapse ( g->tree_v6 );
+   /* purge if requested */
+   if ( g->purge_infiles != NULL ) {
+      ret = main_interpret_parse_ret (
+         main_parse_dedup_to_tree (
+            g->purge_infiles, g->tree_mode, g->want_keep_going,
+            &purge_tree_v4, &purge_tree_v6
+         )
+      );
 
-      /* invert if requested */
-      if ( g->want_invert ) {
-         if ( ip_tree_invert ( g->tree_v6 ) != 0 ) {
-            return EX_SOFTWARE;
-         }
+      dynarray_free_ptr ( &(g->purge_infiles) );
+
+      if ( ret != 0 ) {
+         /* purge_tree_v4, purge_tree_v6 are NULL - free() not necessary */
+         MAIN_PRINT_USAGE_ERR ( "failed to parse purge input" );
+         return ret;
+      }
+
+      ret = ip_tree_builder_purge (
+         g->tree_builder, purge_tree_v4, purge_tree_v6
+      );
+
+      ip_tree_destroy ( &purge_tree_v4 );
+      ip_tree_destroy ( &purge_tree_v6 );
+
+      if ( ret != 0 ) {
+         MAIN_PRINT_USAGE_ERR_TERSE ( "failed to purge networks" );
+         return EX_SOFTWARE;
       }
    }
 
@@ -353,6 +411,40 @@ static int main_run (
 
 #undef MAIN_PRINT_USAGE_ERR
 #undef MAIN_PRINT_USAGE_ERR_TERSE
+
+static int main_parse_dedup_to_tree (
+   struct dynarray* const restrict infiles,
+   const int tree_mode,
+   const bool keep_going,
+   struct ip_tree** const restrict tree_v4_out,
+   struct ip_tree** const restrict tree_v6_out
+) {
+   int ret;
+   struct ip_tree_build_data* tree_builder;
+
+   *tree_v4_out = NULL;
+   *tree_v6_out = NULL;
+
+   tree_builder = ip_tree_builder_new ( tree_mode );
+   if ( tree_builder == NULL ) { return -1; }
+
+   ret = ip_tree_builder_parse_files_do_insert (
+      tree_builder, infiles, keep_going
+   );
+
+   if ( ret != PARSE_IP_RET_SUCCESS ) {
+      ip_tree_builder_destroy ( &tree_builder );
+      return ret;
+   }
+
+   *tree_v4_out = ip_tree_builder_steal_v4 ( tree_builder );
+   *tree_v6_out = ip_tree_builder_steal_v6 ( tree_builder );
+
+   ip_tree_builder_destroy ( &tree_builder );
+
+   return PARSE_IP_RET_SUCCESS;
+}
+
 
 static int guess_tree_mode ( const char* const restrict prog_name ) {
    const char* s;
@@ -412,6 +504,7 @@ static void print_description (
          "\n"
          "  Merges and aggregates IPv4/IPv6 addresses/networks and writes\n"
          "  the resulting networks in <addr>/<prefixlen> notation to stdout.\n"
+         "  Networks can be excluded from the final result by using the purge option.\n"
          "\n"
          "  The output will be sorted. When operating in mixed mode,\n"
          "  IPv4 networks will be written before any IPv6 networks.\n"
@@ -440,7 +533,7 @@ static void print_usage (
       stream,
       (
          "Usage:\n"
-         "  %s {-4|-6|-a|-h|-i|-k|-o <FILE>} [<FILE>...]\n"
+         "  %s {-4|-6|-a|-h|-i|-k|-o <FILE>|-p <FILE>} [<FILE>...]\n"
          "\n"
          "Options:\n"
          "  -4           IPv4 mode\n"
@@ -450,6 +543,8 @@ static void print_usage (
          "  -i           invert networks\n"
          "  -k           skip invalid input instead of exiting with non-zero code\n"
          "  -o <FILE>    write output to <FILE> instead of stdout\n"
+         "  -p <FILE>    read network excludes from <FILE>\n"
+         "               can be specified more than once\n"
          "\n"
          "Positional Arguments:\n"
          "  FILE...      read networks from files instead of stdin\n"

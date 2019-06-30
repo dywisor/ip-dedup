@@ -52,6 +52,7 @@ struct ipdedup_globals {
     bool close_outstream;
 
     struct dynarray* infiles;
+    struct dynarray* purge_infiles;
 
     bool want_invert;
     bool want_keep_going;
