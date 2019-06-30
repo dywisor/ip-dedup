@@ -15,6 +15,9 @@ struct ip_tree {
    struct ip_tree_node* root;
 };
 
+
+struct ip_tree* ip_tree_new ( const struct ip_tree_typedesc* tdesc );
+
 /**
  * Creates an empty IPv4 tree.
  *

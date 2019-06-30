@@ -18,12 +18,12 @@ static int _ip_tree_init_null ( struct ip_tree* const restrict tree ) {
 }
 
 
-struct ip_tree* ip4_tree_new (void) {
+struct ip_tree* ip_tree_new ( const struct ip_tree_typedesc* tdesc ) {
    struct ip_tree* tree;
 
    tree = (struct ip_tree*) malloc ( sizeof *tree );
    if ( tree != NULL ) {
-      tree->tdesc = &IP4_TREE_NODE_OPS;
+      tree->tdesc = tdesc;
 
       if ( _ip_tree_init_null ( tree ) != 0 ) {
          free ( tree );
@@ -35,20 +35,14 @@ struct ip_tree* ip4_tree_new (void) {
 }
 
 
+
+struct ip_tree* ip4_tree_new (void) {
+   return ip_tree_new ( &IP4_TREE_NODE_OPS );
+}
+
+
 struct ip_tree* ip6_tree_new (void) {
-   struct ip_tree* tree;
-
-   tree = (struct ip_tree*) malloc ( sizeof *tree );
-   if ( tree != NULL ) {
-      tree->tdesc = &IP6_TREE_NODE_OPS;
-
-      if ( _ip_tree_init_null ( tree ) != 0 ) {
-         free ( tree );
-         tree = NULL;
-      }
-   }
-
-   return tree;
+   return ip_tree_new ( &IP6_TREE_NODE_OPS );
 }
 
 
