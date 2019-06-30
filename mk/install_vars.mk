@@ -13,6 +13,8 @@ DIRMODE ?= 0755
 
 LN      ?= ln
 INSTALL ?= install
+MKDIR   ?= mkdir
+MKDIRP   = $(MKDIR) -p
 
 DODIR    = $(INSTALL) -d -m $(DIRMODE)
 DOEXE    = $(INSTALL) -D -m $(EXEMODE)

@@ -32,13 +32,13 @@ PHONY += ip-dedup
 ip-dedup: $(O)/ip-dedup
 
 $(O):
-	mkdir -p -- $@
+	$(MKDIRP) -- $@
 
 $(O_OBJ):
-	mkdir -p -- $@
+	$(MKDIRP) -- $@
 
 $(O_OBJ)/%.o: $(SRC)/%.c $(wildcard $(SRC)/%.h) | $(O_OBJ)
-	mkdir -p -- $(@D)
+	$(MKDIRP) -- $(@D)
 	$(COMPILE_C) $< -o $@
 
 $(O)/ip-dedup: \

@@ -30,7 +30,7 @@ ODEP_IP_DEDUP := ${OBUNDLE_APP_IP_DEDUP:%=src/%.o}
 
 .SUFFIXES: .c .o
 .c.o:
-	mkdir -p -- ${@D}
+	${MKDIRP} -- ${@D}
 	${COMPILE_C} ${<} -o ${@}
 
 ip-dedup: ${ODEP_IP_DEDUP}
