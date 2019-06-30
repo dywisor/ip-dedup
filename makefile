@@ -1,8 +1,8 @@
-S := ${.CURDIR}
-
 # compat bits for combined GNU/BSD make targets, do not use them in this file
+S    := ${.CURDIR}
 O     = .
 O_OBJ = $(O)/src
+# ---
 
 PHONY =
 
@@ -10,6 +10,14 @@ PHONY += all
 all: ip-dedup
 
 .include "mk/install_vars.mk"
+.include "mk/prj.mk"
+
+STANDALONE ?= 0
+.if ${STANDALONE} == 1
+.include "mk/datadir_standalone.mk"
+.else
+.include "mk/datadir_install.mk"
+.endif
 
 .if !defined(IPDEDUP_DATADIR) || ${IPDEDUP_DATADIR} == ""
 CC_OPTS_EXTRA += -UIPDEDUP_DATADIR

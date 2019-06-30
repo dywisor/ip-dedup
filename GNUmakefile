@@ -12,6 +12,14 @@ PHONY += all
 all: ip-dedup
 
 include $(MK_INCLUDE)/install_vars.mk
+include $(MK_INCLUDE)/prj.mk
+
+STANDALONE ?= 0
+ifeq ($(STANDALONE),1)
+include $(MK_INCLUDE)/datadir_standalone.mk
+else
+include $(MK_INCLUDE)/datadir_install.mk
+endif
 
 ifeq ("","$(IPDEDUP_DATADIR)")
 CC_OPTS_EXTRA += -UIPDEDUP_DATADIR

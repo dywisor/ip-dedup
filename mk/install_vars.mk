@@ -20,5 +20,3 @@ DODIR    = $(INSTALL) -d -m $(DIRMODE)
 DOEXE    = $(INSTALL) -D -m $(EXEMODE)
 DOINS    = $(INSTALL) -D -m $(INSMODE)
 DOSYM    = $(LN) -f -s
-
-IPDEDUP_DATADIR ?= $(SHAREDIR)/ip-dedup
