@@ -20,6 +20,11 @@ all: ip-dedup
 .include "mk/static.mk"
 .endif
 
+HARDEN ?= 1
+.if ${HARDEN} == 1
+.include "mk/c_harden.mk"
+.endif
+
 .include "mk/compile_c.mk"
 .include "mk/obj_defs.mk"
 

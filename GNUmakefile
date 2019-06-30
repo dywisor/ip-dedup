@@ -22,6 +22,11 @@ ifeq ($(STATIC),1)
 include $(MK_INCLUDE)/static.mk
 endif
 
+HARDEN ?= 1
+ifeq ($(HARDEN),1)
+include $(MK_INCLUDE)/c_harden.mk
+endif
+
 include $(MK_INCLUDE)/compile_c.mk
 include $(MK_INCLUDE)/obj_defs.mk
 
