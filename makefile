@@ -17,6 +17,13 @@ all: ip-dedup
 .include "mk/compile_c.mk"
 .include "mk/obj_defs.mk"
 
+PHONY += clean
+clean:
+	test ! -d ./src || find ./src -type f -name '*.o' -delete
+	test ! -d ./src || find ./src -depth -type d -empty -delete
+	test ! -f ./ip-dedup || rm -- ./ip-dedup
+
+
 ODEP_IP_DEDUP := ${OBUNDLE_APP_IP_DEDUP:%=src/%.o}
 
 .SUFFIXES: .c .o
