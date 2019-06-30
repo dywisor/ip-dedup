@@ -44,6 +44,8 @@ struct ipdedup_globals {
     struct ip_tree* tree_v4;
     struct ip_tree* tree_v6;
 
+    const char* prog_name;
+
     const char* outfile;
     FILE* outstream;
     bool close_outstream;

@@ -46,7 +46,6 @@ static int main_inner (
 __attribute__((warn_unused_result))
 static int main_inner_parse_input (
    struct ipdedup_globals* const restrict g,
-   const char* const prog_name,
    int argc, char** argv
 );
 
@@ -144,7 +143,7 @@ int main ( int argc, char** argv ) {
 #define MAIN_PRINT_USAGE_ERR(_msg)  \
    do {  \
       fprintf ( stderr, "Error: %s\n\n", (_msg) ); \
-      print_usage ( stderr, prog_name ); \
+      print_usage ( stderr, g->prog_name ); \
    } while (0)
 
 
@@ -181,7 +180,6 @@ static int main_interpret_parse_ret ( const int parse_ret ) {
 
 static int main_inner_parse_input (
    struct ipdedup_globals* const restrict g,
-   const char* const prog_name,
    int argc, char** argv
 ) {
    int opt;
@@ -233,9 +231,7 @@ static int main_inner (
    int opt;
    int ret;
 
-   const char* prog_name;
-
-   prog_name = get_prog_name ( argv[0] );
+   g->prog_name = get_prog_name ( argv[0] );
 
    while ( ( opt = getopt ( argc, argv, PROG_OPTIONS ) ) != -1 ) {
       switch ( opt ) {
@@ -252,7 +248,7 @@ static int main_inner (
             break;
 
          case 'h':
-            print_description ( stdout, prog_name );
+            print_description ( stdout, g->prog_name );
             return 0;
 
          case 'i':
@@ -278,13 +274,13 @@ static int main_inner (
             break;
 
          default:
-            print_usage ( stderr, prog_name );
+            print_usage ( stderr, g->prog_name );
             return EX_USAGE;
       }
    }
 
    if ( g->tree_mode == IPDEDUP_TREE_MODE_NONE ) {
-      g->tree_mode = guess_tree_mode ( prog_name );
+      g->tree_mode = guess_tree_mode ( g->prog_name );
    }
 
    /* initialize tree builder and main dispatcher,
@@ -301,7 +297,7 @@ static int main_inner (
    ipdedup_globals_init_tree_view ( g );
 
    /* parse input */
-   ret = main_inner_parse_input ( g, prog_name, argc, argv );  /* uses optind */
+   ret = main_inner_parse_input ( g, argc, argv );  /* uses optind */
    if ( ret != 0 ) {
       MAIN_PRINT_USAGE_ERR ( "Failed to parse input" );
       return ret;
