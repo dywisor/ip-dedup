@@ -204,7 +204,6 @@ static int main_inner (
    static const char* const PROG_OPTIONS = "46ahiko:";
 
    int opt;
-   int ret;
 
    g->prog_name = get_prog_name ( argv[0] );
 
@@ -290,25 +289,23 @@ static int main_inner (
    /* initialize tree view */
    ipdedup_globals_init_tree_view ( g );
 
-   /* parse input */
-   ret = main_inner_parse_input ( g, argc, argv );  /* uses optind */
-   if ( ret != 0 ) {
-      MAIN_PRINT_USAGE_ERR ( "Failed to parse input" );
-      return ret;
-   }
-
    /* dispatch */
    return main_run ( g );
 }
-
-#undef MAIN_PRINT_USAGE_ERR
-#undef MAIN_PRINT_USAGE_ERR_TERSE
-
 
 
 static int main_run (
    struct ipdedup_globals* const restrict g
 ) {
+   int ret;
+
+   /* parse input */
+   ret = main_inner_parse_input ( g );  /* uses optind */
+   if ( ret != 0 ) {
+      MAIN_PRINT_USAGE_ERR ( "Failed to parse input" );
+      return ret;
+   }
+
    /* IPv4 operations */
    if ( g->tree_v4 != NULL ) {
       /* collapse tree */
@@ -353,6 +350,9 @@ static int main_run (
    return 0;
 }
 
+
+#undef MAIN_PRINT_USAGE_ERR
+#undef MAIN_PRINT_USAGE_ERR_TERSE
 
 static int guess_tree_mode ( const char* const restrict prog_name ) {
    const char* s;
