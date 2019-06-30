@@ -142,7 +142,7 @@ int ip_tree_builder_parse_stream_do (
 
     if ( (input_stream == stdin) && (obj->did_read_stdin) ) {
         /* will not read stdin twice */
-        return PARSE_IP_RET_BAD_INFILE;
+        return PARSE_IP_RET_BAD_INFILE_DUP;
     }
 
     if (
