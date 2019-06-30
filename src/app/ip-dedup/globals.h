@@ -10,6 +10,7 @@
 #include "../../ip_tree.h"
 #include "../../ip_tree_io/builder.h"
 #include "../../util/parse_ip/common.h"
+#include "../../util/dynarray.h"
 
 /**
  * mode of tree operations, choose from
@@ -49,6 +50,8 @@ struct ipdedup_globals {
     const char* outfile;
     FILE* outstream;
     bool close_outstream;
+
+    struct dynarray* infiles;
 
     bool want_invert;
     bool want_keep_going;

@@ -9,6 +9,7 @@
 #include "../../ip_tree.h"
 #include "../../ip_tree_io/builder.h"
 #include "../../util/parse_ip/common.h"
+#include "../../util/dynarray.h"
 
 
 int ipdedup_globals_init ( struct ipdedup_globals* const restrict g ) {
@@ -23,6 +24,8 @@ int ipdedup_globals_init ( struct ipdedup_globals* const restrict g ) {
     g->outfile          = NULL;
     g->outstream        = NULL;
     g->close_outstream  = false;
+
+    g->infiles          = NULL;
 
     g->want_invert      = false;
     g->want_keep_going  = false;
@@ -41,6 +44,10 @@ void ipdedup_globals_free ( struct ipdedup_globals* const restrict g ) {
             fclose ( g->outstream );    /* ignore retcode */
             g->outstream = NULL;
         }
+    }
+
+    if ( g->infiles != NULL ) {
+        dynarray_free_ptr ( &(g->infiles) );
     }
 }
 

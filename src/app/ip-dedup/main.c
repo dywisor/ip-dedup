@@ -45,8 +45,7 @@ static int main_inner (
  * */
 __attribute__((warn_unused_result))
 static int main_inner_parse_input (
-   struct ipdedup_globals* const restrict g,
-   int argc, char** argv
+   struct ipdedup_globals* const restrict g
 );
 
 __attribute__((warn_unused_result))
@@ -179,44 +178,20 @@ static int main_interpret_parse_ret ( const int parse_ret ) {
 }
 
 static int main_inner_parse_input (
-   struct ipdedup_globals* const restrict g,
-   int argc, char** argv
+   struct ipdedup_globals* const restrict g
 ) {
-   int opt;
    int parse_ret;
-   struct dynarray* infiles;
 
-   infiles = NULL;
-
-   if ( optind < argc ) {
-      infiles = new_dynarray ( (argc - optind) );
-      if ( infiles == NULL ) { return EX_OSERR; }
-
-      dynarray_set_data_readonly ( infiles );
-
-      for ( opt = optind; opt < argc; opt++ ) {
-         const char* const arg = argv[opt];
-
-         if ( (arg == NULL) || (*arg == '\0') ) {
-            MAIN_PRINT_USAGE_ERR ( "expected non-empty positional argument." );
-            return EX_USAGE;
-
-         } else if ( dynarray_append ( infiles, (void*) arg ) != 0 ) {
-            dynarray_free_ptr ( &infiles );
-            return EX_OSERR;
-         }
-      }
-
-      parse_ret = ip_tree_builder_parse_files_do_insert (
-         g->tree_builder, infiles, g->want_keep_going
-      );
-
-      dynarray_free_ptr ( &infiles );
-
-   } else {
+   if ( g->infiles == NULL ) {
       parse_ret = ip_tree_builder_parse_stream_do_insert (
          g->tree_builder, stdin, g->want_keep_going
       );
+
+   } else {
+      parse_ret = ip_tree_builder_parse_files_do_insert (
+         g->tree_builder, g->infiles, g->want_keep_going
+      );
+      dynarray_free_ptr ( &(g->infiles) );
    }
 
    return main_interpret_parse_ret ( parse_ret );
@@ -276,6 +251,25 @@ static int main_inner (
          default:
             print_usage ( stderr, g->prog_name );
             return EX_USAGE;
+      }
+   }
+
+   if ( optind < argc ) {
+      g->infiles = new_dynarray ( (argc - optind) );
+      if ( g->infiles == NULL ) { return EX_OSERR; }
+
+      dynarray_set_data_readonly ( g->infiles );
+
+      for ( opt = optind; opt < argc; opt++ ) {
+         const char* const arg = argv[opt];
+
+         if ( (arg == NULL) || (*arg == '\0') ) {
+            MAIN_PRINT_USAGE_ERR ( "expected non-empty positional argument." );
+            return EX_USAGE;
+
+         } else if ( dynarray_append ( g->infiles, (void*) arg ) != 0 ) {
+            return EX_OSERR;
+         }
       }
    }
 
