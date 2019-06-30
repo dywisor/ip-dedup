@@ -218,6 +218,10 @@ static int main_inner (
 
    g->prog_name = get_prog_name ( argv[0] );
 
+   g->purge_infiles = new_dynarray ( 1 );
+   if ( g->purge_infiles == NULL ) { return EX_OSERR; }
+   dynarray_set_data_readonly ( g->purge_infiles );
+
    while ( ( opt = getopt ( argc, argv, PROG_OPTIONS ) ) != -1 ) {
       switch ( opt ) {
          case '4':
@@ -265,12 +269,6 @@ static int main_inner (
 
             } else {
                /* push optarg to array (also if optarg is stdin marker "-") */
-               if ( g->purge_infiles == NULL ) {
-                  g->purge_infiles = new_dynarray ( 1 );
-                  if ( g->purge_infiles == NULL ) { return EX_OSERR; }
-                  dynarray_set_data_readonly ( g->purge_infiles );
-               }
-
                if ( dynarray_append ( g->purge_infiles, (void*) optarg ) != 0 ) {
                   return EX_OSERR;
                }
@@ -361,7 +359,10 @@ static int main_run (
    }
 
    /* purge if requested */
-   if ( g->purge_infiles != NULL ) {
+   if ( g->purge_infiles->len < 1 ) {
+      dynarray_free_ptr ( &(g->purge_infiles) );
+
+   } else {
       ret = main_interpret_parse_ret (
          main_parse_dedup_to_tree (
             g->purge_infiles, g->tree_mode, g->want_keep_going,
