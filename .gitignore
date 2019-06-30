@@ -1,5 +1,5 @@
 ## additional files to ignore
-/build
+/obj
 /doc/pdf
 /local
 /tmp
