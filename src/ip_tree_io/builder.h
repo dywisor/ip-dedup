@@ -101,4 +101,11 @@ int ip_tree_builder_insert_from_stream (
     const bool keep_going
 );
 
+
+int ip_tree_builder_insert_from_files (
+    struct ip_tree_build_data* const restrict obj,
+    struct dynarray* const input_files,
+    const bool keep_going
+);
+
 #endif  /* _HAVE_IP_TREE_IO_BUILD_DATA_H_ */

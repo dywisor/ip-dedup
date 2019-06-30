@@ -248,3 +248,17 @@ int ip_tree_builder_insert_from_stream (
         keep_going
     );
 }
+
+
+int ip_tree_builder_insert_from_files (
+    struct ip_tree_build_data* const restrict obj,
+    struct dynarray* const input_files,
+    const bool keep_going
+) {
+    return ip_tree_builder_parse_files_do (
+        ip_tree_builder_process_parsed__insert,
+        obj,
+        input_files,
+        keep_going
+    );
+}
