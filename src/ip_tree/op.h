@@ -3,3 +3,4 @@
 #include "op/find.h"
 #include "op/insert.h"
 #include "op/invert.h"
+#include "op/purge.h"
