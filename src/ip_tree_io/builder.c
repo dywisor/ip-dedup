@@ -164,7 +164,7 @@ int ip_tree_builder_parse_stream_do (
 
             case PARSE_IP_RET_EOF:
                 // regular function end here
-                ret = parse_ip_eof_eval_keep_going_status ( &pfile_state );
+                ret = parse_ip_file_eof_eval_keep_going_status ( &pfile_state );
                 parse_ip_file_state_free_data ( &pfile_state );
                 return ret;
 
