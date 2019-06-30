@@ -624,7 +624,7 @@ static void print_usage (
          "  The keep-going mode (-k) allows for invalid input.\n"
          "  However, if no input network specification could be parsed\n"
          "  but at least one was seen, then %s exits non-zero (%d).\n"
-         "  This rules applies to each individual input file.\n"
+         "  This rule applies to each individual input file.\n"
       ),
 
       /* Usage: */
