@@ -108,8 +108,8 @@ static const char* get_prog_name ( const char* const restrict prog_path );
  * @return None (implicit)
  * */
 static void print_description (
-   FILE* const restrict stream,
-   const char* const restrict prog_name
+   const struct ipdedup_globals* const restrict g,
+   FILE* const restrict stream
 );
 
 
@@ -122,8 +122,8 @@ static void print_description (
  * @return None (implicit)
  * */
 static void print_usage (
-   FILE* const restrict stream,
-   const char* const restrict prog_name
+   const struct ipdedup_globals* const restrict g,
+   FILE* const restrict stream
 );
 
 
@@ -159,7 +159,7 @@ int main ( int argc, char** argv ) {
 #define MAIN_PRINT_USAGE_ERR(_msg)  \
    do {  \
       fprintf ( stderr, "Error: %s\n\n", (_msg) ); \
-      print_usage ( stderr, g->prog_name ); \
+      print_usage ( g, stderr ); \
    } while (0)
 
 
@@ -300,7 +300,7 @@ static int main_inner (
             break;
 
          case 'h':
-            print_description ( stdout, g->prog_name );
+            print_description ( g, stdout );
             return 0;
 
          case 'i':
@@ -338,7 +338,7 @@ static int main_inner (
             break;
 
          default:
-            print_usage ( stderr, g->prog_name );
+            print_usage ( g, stderr );
             return EX_USAGE;
       }
    }
@@ -560,8 +560,8 @@ static const char* get_prog_name ( const char* const restrict prog_path ) {
 
 
 static void print_description (
-   FILE* const restrict stream,
-   const char* const restrict prog_name
+   const struct ipdedup_globals* const restrict g,
+   FILE* const restrict stream
 ) {
    fprintf (
       stream,
@@ -587,13 +587,13 @@ static void print_description (
       ((IPDEDUP_VER_SUFFIX != NULL) ? IPDEDUP_VER_SUFFIX : "")
    );
 
-   print_usage ( stream, prog_name );
+   print_usage ( g, stream );
 }
 
 
 static void print_usage (
-   FILE* const restrict stream,
-   const char* const restrict prog_name
+   const struct ipdedup_globals* const restrict g,
+   FILE* const restrict stream
 ) {
    fprintf (
       stream,
@@ -642,7 +642,7 @@ static void print_usage (
       ),
 
       /* Usage: */
-      prog_name,
+      g->prog_name,
 
       /* Options: */
 
@@ -659,7 +659,7 @@ static void print_usage (
       EX_IOERR,
 
       /* Notes: */
-      prog_name,
+      g->prog_name,
       EX_DATAERR
    );
 }
