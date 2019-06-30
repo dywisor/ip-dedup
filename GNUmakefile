@@ -23,10 +23,9 @@ endif
 include $(MK_INCLUDE)/compile_c.mk
 include $(MK_INCLUDE)/obj_defs.mk
 
-include $(MK_INCLUDE)/clean_target.mk
-
 include $(MK_INCLUDE)/install_vars.mk
-include $(MK_INCLUDE)/install_target.mk
+
+include $(MK_INCLUDE)/common_targets.mk
 
 
 PHONY += ip-dedup
