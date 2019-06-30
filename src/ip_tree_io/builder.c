@@ -262,3 +262,52 @@ int ip_tree_builder_parse_files_do_insert (
         keep_going
     );
 }
+
+
+int ip_tree_builder_purge (
+    struct ip_tree_build_data* const restrict obj,
+    struct ip_tree* const restrict purge_tree_v4,
+    struct ip_tree* const restrict purge_tree_v6
+) {
+    size_t k;
+    struct dynarray* arr;
+
+    if ( purge_tree_v4 != NULL ) {
+        arr = ip4_tree_collect_addr ( purge_tree_v4 );
+        if ( arr == NULL ) { return -1; }
+
+        dynarray_foreach ( arr, k ) {
+            const ip_addr_variant_t* const addr = dynarray_get_as (
+                arr, k, const ip_addr_variant_t*
+            );
+
+            if ( ip_tree_purge ( obj->v4, addr ) != 0 ) {
+                dynarray_free_ptr ( &arr );
+                return -1;
+            }
+        }
+
+        dynarray_free_ptr ( &arr );
+    }
+
+    if ( purge_tree_v6 != NULL ) {
+        arr = ip6_tree_collect_addr ( purge_tree_v6 );
+        if ( arr == NULL ) { return -1; }
+
+        dynarray_foreach ( arr, k ) {
+            const ip_addr_variant_t* const addr = dynarray_get_as (
+                arr, k, const ip_addr_variant_t*
+            );
+
+            if ( ip_tree_purge ( obj->v6, addr ) != 0 ) {
+                dynarray_free_ptr ( &arr );
+                return -1;
+            }
+        }
+
+        dynarray_free_ptr ( &arr );
+    }
+
+
+    return 0;
+}

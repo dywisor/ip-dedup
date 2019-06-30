@@ -108,4 +108,11 @@ int ip_tree_builder_parse_files_do_insert (
     const bool keep_going
 );
 
+
+int ip_tree_builder_purge (
+    struct ip_tree_build_data* const restrict obj,
+    struct ip_tree* const restrict purge_tree_v4,
+    struct ip_tree* const restrict purge_tree_v6
+);
+
 #endif  /* _HAVE_IP_TREE_IO_BUILD_DATA_H_ */
