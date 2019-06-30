@@ -12,6 +12,8 @@
 #include "../../ip_tree_io/builder.h"
 #include "../../ip_tree_io/print.h"
 
+#include "../../util/dynarray.h"
+
 /**
  * The actual main function.
  *
@@ -47,6 +49,9 @@ static int main_inner_parse_input (
    const char* const prog_name,
    int argc, char** argv
 );
+
+__attribute__((warn_unused_result))
+static int main_interpret_parse_ret ( const int parse_ret );
 
 
 /**
@@ -131,19 +136,48 @@ int main ( int argc, char** argv ) {
 }
 
 
+#define MAIN_PRINT_USAGE_ERR_TERSE(_msg)  \
+   do {  \
+      fprintf ( stderr, "Error: %s\n", (_msg) );  \
+   } while (0)
+
 #define MAIN_PRINT_USAGE_ERR(_msg)  \
    do {  \
-      fprintf ( stderr, "Error: %s\n\n", (_msg) );  \
+      fprintf ( stderr, "Error: %s\n\n", (_msg) ); \
       print_usage ( stderr, prog_name ); \
    } while (0)
 
 
-#define main_inner_parse_input__ret_on_error()  \
-   do { \
-      if ( parse_ret != 0 ) { \
-         return ( parse_ret < 0 ) ? EX_SOFTWARE : EX_DATAERR; \
-      } \
-   } while (0)
+static int main_interpret_parse_ret ( const int parse_ret ) {
+   switch ( parse_ret ) {
+      case PARSE_IP_RET_SUCCESS:
+         return 0;
+
+      case PARSE_IP_RET_BAD_INFILE_DUP:
+         MAIN_PRINT_USAGE_ERR_TERSE ( "will not read stdin twice." );
+         return EX_USAGE;
+
+      case PARSE_IP_RET_BAD_INFILE:
+         return EX_USAGE;
+
+      case PARSE_IP_RET_READ_ERR:
+         return EX_IOERR;
+
+      case PARSE_IP_RET_FAIL:
+         return EX_SOFTWARE;
+
+      case PARSE_IP_RET_INVALID:
+         return EX_DATAERR;
+
+      case PARSE_IP_RET_DID_NOT_TRY:
+      case PARSE_IP_RET_NOT_IMPLEMENTED:
+      case PARSE_IP_RET_EOF:
+         return EX_SOFTWARE;
+
+      default:
+         return EX_SOFTWARE;
+   }
+}
 
 static int main_inner_parse_input (
    struct ipdedup_globals* const restrict g,
@@ -152,62 +186,43 @@ static int main_inner_parse_input (
 ) {
    int opt;
    int parse_ret;
-   bool did_read_stdin;
+   struct dynarray* infiles;
 
-   FILE* instream;
-   const char* arg;
+   infiles = NULL;
 
    if ( optind < argc ) {
-      did_read_stdin = false;
+      infiles = new_dynarray ( (argc - optind) );
+      if ( infiles == NULL ) { return EX_OSERR; }
+
+      dynarray_set_data_readonly ( infiles );
+
       for ( opt = optind; opt < argc; opt++ ) {
-         arg = argv[opt];
+         const char* const arg = argv[opt];
 
          if ( (arg == NULL) || (*arg == '\0') ) {
             MAIN_PRINT_USAGE_ERR ( "expected non-empty positional argument." );
             return EX_USAGE;
 
-         } else if ( (*(arg + 1) == '\0') && (*arg == '-') ) {
-            if ( did_read_stdin ) {
-               MAIN_PRINT_USAGE_ERR ( "will not read stdin twice." );
-               print_usage ( stderr, prog_name );
-               return EX_USAGE;
-
-            } else {
-               parse_ret = ip_tree_builder_insert_from_stream (
-                  g->tree_builder, stdin, g->want_keep_going
-               );
-               did_read_stdin = true;
-
-               main_inner_parse_input__ret_on_error();
-            }
-
-         } else {
-            instream = fopen ( arg, "r" );
-            if ( instream == NULL ) { return EX_IOERR; }
-
-            parse_ret = ip_tree_builder_insert_from_stream (
-               g->tree_builder, instream, g->want_keep_going
-            );
-
-            fclose ( instream );
-            instream = NULL;
-
-            main_inner_parse_input__ret_on_error();
+         } else if ( dynarray_append ( infiles, (void*) arg ) != 0 ) {
+            dynarray_free_ptr ( &infiles );
+            return EX_OSERR;
          }
       }
 
+      parse_ret = ip_tree_builder_parse_files_do_insert (
+         g->tree_builder, infiles, g->want_keep_going
+      );
+
+      dynarray_free_ptr ( &infiles );
+
    } else {
-      parse_ret = ip_tree_builder_insert_from_stream (
+      parse_ret = ip_tree_builder_parse_stream_do_insert (
          g->tree_builder, stdin, g->want_keep_going
       );
-      did_read_stdin = true;
-
-      main_inner_parse_input__ret_on_error();
    }
 
-   return 0;
+   return main_interpret_parse_ret ( parse_ret );
 }
-#undef main_inner_parse_input__ret_on_error
 
 
 static int main_inner (
@@ -290,7 +305,10 @@ static int main_inner (
 
    /* parse input */
    ret = main_inner_parse_input ( g, prog_name, argc, argv );  /* uses optind */
-   if ( ret != 0 ) { return ret; }
+   if ( ret != 0 ) {
+      MAIN_PRINT_USAGE_ERR ( "Failed to parse input" );
+      return ret;
+   }
 
    /* open outstream */
    if ( outfile_arg == NULL ) {
@@ -308,6 +326,7 @@ static int main_inner (
 }
 
 #undef MAIN_PRINT_USAGE_ERR
+#undef MAIN_PRINT_USAGE_ERR_TERSE
 
 
 
