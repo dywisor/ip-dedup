@@ -21,14 +21,10 @@ include $(MK_INCLUDE)/static.mk
 endif
 
 include $(MK_INCLUDE)/compile_c.mk
-
 include $(MK_INCLUDE)/obj_defs.mk
 
-PHONY += clean
-clean:
-	test ! -d '$(O_OBJ)' || find '$(O_OBJ)' -type f -name '*.o' -delete
-	test ! -d '$(O_OBJ)' || find '$(O_OBJ)' -depth -type d -empty -delete
-	test ! -f '$(O)/ip-dedup' || rm -- '$(O)/ip-dedup'
+include $(MK_INCLUDE)/clean_target.mk
+
 
 PHONY += ip-dedup
 ip-dedup: $(O)/ip-dedup

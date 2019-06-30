@@ -1,5 +1,9 @@
 S := ${.CURDIR}
 
+# compat bits for combined GNU/BSD make targets, do not use them in this file
+O     = .
+O_OBJ = $(O)/src
+
 PHONY =
 
 PHONY += all
@@ -17,11 +21,7 @@ all: ip-dedup
 .include "mk/compile_c.mk"
 .include "mk/obj_defs.mk"
 
-PHONY += clean
-clean:
-	test ! -d ./src || find ./src -type f -name '*.o' -delete
-	test ! -d ./src || find ./src -depth -type d -empty -delete
-	test ! -f ./ip-dedup || rm -- ./ip-dedup
+.include "mk/clean_target.mk"
 
 
 ODEP_IP_DEDUP := ${OBUNDLE_APP_IP_DEDUP:%=src/%.o}
