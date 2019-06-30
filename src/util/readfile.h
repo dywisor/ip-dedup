@@ -9,7 +9,8 @@
 enum {
     READFILE_RET_LINE = 0,
     READFILE_RET_EMPTY_LINE = 1,
-    READFILE_RET_EOF = 2
+    READFILE_RET_COMMENT_LINE = 2,
+    READFILE_RET_EOF = 3
 };
 
 struct readfile_state {

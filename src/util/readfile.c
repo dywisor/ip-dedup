@@ -107,10 +107,15 @@ int readfile_next (
     rstate->line_len = (size_t) nread;
     rstate->line     = str_strip ( rstate->line_buf, &(rstate->line_len) );
 
-    if ( *(rstate->line) == '\0' ) {
-        return READFILE_RET_EMPTY_LINE;
-    } else {
-        return READFILE_RET_LINE;
+    switch ( *(rstate->line) ) {
+        case '\0':
+            return READFILE_RET_EMPTY_LINE;
+
+        case '#':
+            return READFILE_RET_COMMENT_LINE;
+
+        default:
+            return READFILE_RET_LINE;
     }
 }
 
@@ -125,6 +130,7 @@ int readfile_next_effective (
 
         switch ( ret ) {
             case READFILE_RET_EMPTY_LINE:
+            case READFILE_RET_COMMENT_LINE:
                 break;
 
             default:
