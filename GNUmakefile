@@ -6,6 +6,9 @@ MK_INCLUDE = $(S)/mk
 O := $(S)/obj
 O_OBJ = $(O)/src
 
+PHONY =
+
+PHONY += all
 all: ip-dedup
 
 include $(MK_INCLUDE)/warnflags_base.mk
@@ -21,7 +24,7 @@ include $(MK_INCLUDE)/compile_c.mk
 
 include $(MK_INCLUDE)/obj_defs.mk
 
-
+PHONY += ip-dedup
 ip-dedup: $(O)/ip-dedup
 
 $(O):
