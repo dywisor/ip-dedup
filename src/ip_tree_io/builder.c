@@ -16,6 +16,10 @@ static struct ip_tree_build_data* ip_tree_build_data_new_empty (void);
 static int ip_tree_build_data_init_v4 ( struct ip_tree_build_data* const obj );
 static int ip_tree_build_data_init_v6 ( struct ip_tree_build_data* const obj );
 
+static int ip_tree_builder_process_parsed__insert (
+    struct ip_tree_build_data* const restrict obj,
+    struct parse_ip_addr_data* const restrict vaddr
+);
 
 
 static struct ip_tree_build_data* ip_tree_build_data_new_empty (void) {
@@ -104,7 +108,28 @@ struct ip_tree* ip_tree_builder_steal_v6 (
 }
 
 
-int ip_tree_builder_insert_from_stream (
+static int ip_tree_builder_process_parsed__insert (
+    struct ip_tree_build_data* const restrict obj,
+    struct parse_ip_addr_data* const restrict vaddr
+) {
+    int ret;
+
+    if ( (vaddr->addr_type & PARSE_IP_TYPE_IPV4) != 0 ) {
+        ret = ip4_tree_insert ( obj->v4, &(vaddr->addr_v4) );
+        if ( ret != 0 ) { return -1; }
+    }
+
+    if ( (vaddr->addr_type & PARSE_IP_TYPE_IPV6) != 0 ) {
+        ret = ip6_tree_insert ( obj->v6, &(vaddr->addr_v6) );
+        if ( ret != 0 ) { return -1; }
+    }
+
+    return 0;
+}
+
+
+int ip_tree_builder_parse_stream_do (
+    ip_tree_build_process_parsed_func f_process_parsed,
     struct ip_tree_build_data* const restrict obj,
     FILE* const restrict input_stream,
     const bool keep_going
@@ -121,6 +146,7 @@ int ip_tree_builder_insert_from_stream (
         return -1;
     }
 
+    /* init cfg */
     pfile_state.cfg.keep_going = keep_going;
 
     do {
@@ -128,28 +154,16 @@ int ip_tree_builder_insert_from_stream (
 
         switch ( parse_ret ) {
             case PARSE_IP_RET_SUCCESS:
-                /* insert */
-
-                if ( (pfile_state.addr.addr_type & PARSE_IP_TYPE_IPV4) != 0 ) {
-                    ret = ip4_tree_insert ( obj->v4, &(pfile_state.addr.addr_v4) );
-                    if ( ret != 0 ) {
-                        parse_ip_file_state_free_data ( &pfile_state );
-                        return -1;
-                    }
-                }
-
-                if ( (pfile_state.addr.addr_type & PARSE_IP_TYPE_IPV6) != 0 ) {
-                    ret = ip6_tree_insert ( obj->v6, &(pfile_state.addr.addr_v6) );
-                    if ( ret != 0 ) {
-                        parse_ip_file_state_free_data ( &pfile_state );
-                        return -1;
-                    }
-                }
-
+                // process parsed
+                ret = f_process_parsed ( obj, &(pfile_state.addr) );
+                if ( ret != PARSE_IP_RET_SUCCESS ) {
+                    parse_ip_file_state_free_data ( &pfile_state );
+                    return ret;
+                } /* else continue with next token */
                 break;
 
             case PARSE_IP_RET_EOF:
-                /* regular function end here */
+                // regular function end here
                 ret = parse_ip_eof_eval_keep_going_status ( &pfile_state );
                 parse_ip_file_state_free_data ( &pfile_state );
                 return ret;
@@ -159,4 +173,18 @@ int ip_tree_builder_insert_from_stream (
                 return parse_ret;
         }
     } while (1);
+}
+
+
+int ip_tree_builder_insert_from_stream (
+    struct ip_tree_build_data* const restrict obj,
+    FILE* const restrict input_stream,
+    const bool keep_going
+) {
+    return ip_tree_builder_parse_stream_do (
+        ip_tree_builder_process_parsed__insert,
+        obj,
+        input_stream,
+        keep_going
+    );
 }

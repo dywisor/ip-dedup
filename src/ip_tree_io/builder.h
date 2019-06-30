@@ -29,6 +29,12 @@ struct ip_tree_build_data {
 };
 
 
+typedef int (*ip_tree_build_process_parsed_func) (
+    struct ip_tree_build_data* const restrict,
+    struct parse_ip_addr_data* const restrict
+);
+
+
 /**
  * Creates a new tree builder.
  * */
@@ -58,6 +64,13 @@ struct ip_tree* ip_tree_builder_steal_v4 (
  * */
 struct ip_tree* ip_tree_builder_steal_v6 (
     struct ip_tree_build_data* const obj
+);
+
+int ip_tree_builder_parse_stream_do (
+    ip_tree_build_process_parsed_func f_process_parsed,
+    struct ip_tree_build_data* const restrict obj,
+    FILE* const restrict input_stream,
+    const bool keep_going
 );
 
 
