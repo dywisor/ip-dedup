@@ -9,25 +9,13 @@ O_BIN = $(O)/bin
 
 all: ip-dedup
 
-
-_WARNFLAGS   =
+include $(MK_INCLUDE)/warnflags_base.mk
 ifeq ($(NO_WERROR),)
-_WARNFLAGS  += -Werror
-_WARNFLAGS  += -Wno-unused-parameter -Wno-error=unused-parameter
-_WARNFLAGS  += -Wno-unknown-pragmas  -Wno-error=unknown-pragmas
+include $(MK_INCLUDE)/warnflags_no_werror.mk
 endif
 
-_WARNFLAGS  += -Wall -Wextra
-_WARNFLAGS  += -Wwrite-strings -Wdeclaration-after-statement
-_WARNFLAGS  += -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations
-_WARNFLAGS  += -pedantic
-_WARNFLAGS  += -Wtrampolines
-_WARNFLAGS  += -Wunsafe-loop-optimizations
-_WARNFLAGS  += -Wformat -Wno-format-extra-args -Wformat-security
-_WARNFLAGS  += -Wformat-nonliteral -Wformat=2
-
 ifeq ($(STATIC),1)
-_CC_OPT_STATIC = -static
+include $(MK_INCLUDE)/static.mk
 endif
 
 include $(MK_INCLUDE)/compile_c.mk
