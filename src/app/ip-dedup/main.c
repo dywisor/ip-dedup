@@ -629,6 +629,7 @@ static void print_usage (
          "Notes:\n"
          "  Input file names starting with a '@' char are looked up\n"
          "  in the data directory after removing the prefix char.\n"
+         "  (currently %s)\n"
          "\n"
          "  For each line in the input (files),\n"
          "  leading and trailing whitespace is removed.\n"
@@ -659,6 +660,7 @@ static void print_usage (
       EX_IOERR,
 
       /* Notes: */
+      ( (g->datadir != NULL) ? g->datadir : "<unset>" ),
       g->prog_name,
       EX_DATAERR
    );
