@@ -68,7 +68,5 @@ int parse_ip_file_next (
 int parse_ip_file_eof_eval_keep_going_status (
     struct parse_ip_file_state* const pfile_state
 );
-/* compat -- FIXME delete */
-#define parse_ip_eof_eval_keep_going_status  parse_ip_file_eof_eval_keep_going_status
 
 #endif  /* _HAVE_UTIL_PARSE_IP_PARSEFILE_H_ */
