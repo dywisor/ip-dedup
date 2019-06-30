@@ -18,6 +18,7 @@ int ipdedup_globals_init ( struct ipdedup_globals* const restrict g ) {
     g->tree_v4          = NULL;
     g->tree_v6          = NULL;
 
+    g->outfile          = NULL;
     g->outstream        = NULL;
     g->close_outstream  = false;
 

@@ -234,11 +234,8 @@ static int main_inner (
    int ret;
 
    const char* prog_name;
-   const char* outfile_arg;
 
    prog_name = get_prog_name ( argv[0] );
-
-   outfile_arg = NULL;
 
    while ( ( opt = getopt ( argc, argv, PROG_OPTIONS ) ) != -1 ) {
       switch ( opt ) {
@@ -273,10 +270,10 @@ static int main_inner (
 
             } else if ( (*optarg == '-') && (*(optarg + 1) == '\0') ) {
                /* switch to stdout */
-               outfile_arg = NULL;
+               g->outfile = NULL;
 
             } else {
-               outfile_arg = optarg;
+               g->outfile = optarg;
             }
             break;
 
@@ -308,17 +305,6 @@ static int main_inner (
    if ( ret != 0 ) {
       MAIN_PRINT_USAGE_ERR ( "Failed to parse input" );
       return ret;
-   }
-
-   /* open outstream */
-   if ( outfile_arg == NULL ) {
-      g->close_outstream = false;
-      g->outstream = stdout;
-
-   } else {
-      g->close_outstream = true;
-      g->outstream = fopen ( outfile_arg, "w" );
-      if ( g->outstream == NULL ) { return EX_CANTCREAT; }
    }
 
    /* dispatch */
@@ -357,6 +343,17 @@ static int main_run (
             return EX_SOFTWARE;
          }
       }
+   }
+
+   /* open outstream */
+   if ( g->outfile == NULL ) {
+      g->close_outstream = false;
+      g->outstream = stdout;
+
+   } else {
+      g->close_outstream = true;
+      g->outstream = fopen ( g->outfile, "w" );
+      if ( g->outstream == NULL ) { return EX_CANTCREAT; }
    }
 
    /* print */
