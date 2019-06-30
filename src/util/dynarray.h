@@ -157,6 +157,7 @@ int dynarray_pop ( struct dynarray* const p_darr, void** const data_out );
 #define dynarray_get(d,k)                 (((d)->arr)[k])
 #define dynarray_get_as(d,k,t)            (t)(dynarray_get(d,k))
 #define dynarray_get_str(d,k)             dynarray_get_as(d,k,char*)
+#define dynarray_get_const_str(d,k)       dynarray_get_as(d,k,const char*)
 
 #define dynarray_argc(d)                  ((d)->len)
 #define dynarray_argv(d)                  (char**)((d)->arr)
