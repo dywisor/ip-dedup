@@ -257,7 +257,7 @@ static int main_inner_parse_input (
 static int main_inner (
    struct ipdedup_globals* const restrict g, int argc, char** argv
 ) {
-   static const char* const PROG_OPTIONS = "46aD:hiko:p:";
+   static const char* const PROG_OPTIONS = "46ac:D:hiko:p:";
 
    int opt;
    int ret;
@@ -280,6 +280,13 @@ static int main_inner (
 
          case 'a':
             g->tree_mode = IPDEDUP_TREE_MODE_MIXED;
+            break;
+
+         case 'c':
+            ret = parse_ip_read_octet ( optarg, 10, &(g->collapse_prefixlen_v6) );
+            if ( (ret != 0) || (g->collapse_prefixlen_v6 > 128) ) {
+               fprintf ( stderr, "Error: -%c needs a number between 0 and 128\n", opt );
+            }
             break;
 
          case 'D':
@@ -392,7 +399,11 @@ static int main_run (
 
    /* collapse tree */
    if ( g->tree_v4 != NULL ) { ip_tree_collapse ( g->tree_v4 ); }
-   if ( g->tree_v6 != NULL ) { ip_tree_collapse ( g->tree_v6 ); }
+
+   if ( g->tree_v6 != NULL ) {
+      ip_tree_set_auto_collapse ( g->tree_v6, g->collapse_prefixlen_v6 );
+      ip_tree_collapse ( g->tree_v6 );
+   }
 
    /* invert if requested */
    if ( g->want_invert ) {
@@ -584,12 +595,15 @@ static void print_usage (
       stream,
       (
          "Usage:\n"
-         "  %s {-4|-6|-a|-D <DIR>|-h|-i|-k|-o <FILE>|-p <FILE>} [<FILE>...]\n"
+         "  %s {-4|-6|-a|-c <N>|-D <DIR>|-h|-i|-k|-o <FILE>|-p <FILE>} [<FILE>...]\n"
          "\n"
          "Options:\n"
          "  -4           IPv4 mode\n"
          "  -6           IPv6 mode\n"
          "  -a           IPv4/IPv6 mixed mode\n"
+         "  -c <N>       IPv6 only: collapse input networks with a prefixlen\n"
+         "               greater than <N> into a /<N> network\n"
+         "               (if <N> greater than zero)\n"
          "  -D <DIR>     look up all following @name input files in <DIR>\n"
          "  -h           print this help message and exit\n"
          "  -i           invert networks\n"
