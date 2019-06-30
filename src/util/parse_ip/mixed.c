@@ -3,8 +3,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <stdio.h>
-
 #include "mixed.h"
 #include "common.h"
 #include "ip4.h"
