@@ -10,6 +10,7 @@
 #include "../ip.h"
 
 #include "../util/parse_ip.h"
+#include "../util/dynarray.h"
 
 
 /**
@@ -72,6 +73,14 @@ int ip_tree_builder_parse_stream_do (
     ip_tree_build_process_parsed_func f_process_parsed,
     struct ip_tree_build_data* const restrict obj,
     FILE* const restrict input_stream,
+    const bool keep_going
+);
+
+
+int ip_tree_builder_parse_files_do (
+    ip_tree_build_process_parsed_func f_process_parsed,
+    struct ip_tree_build_data* const restrict obj,
+    struct dynarray* const input_files,
     const bool keep_going
 );
 

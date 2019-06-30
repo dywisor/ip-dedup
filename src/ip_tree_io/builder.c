@@ -9,6 +9,7 @@
 #include "../ip.h"
 
 #include "../util/readfile.h"
+#include "../util/dynarray.h"
 #include "../util/parse_ip.h"
 
 
@@ -183,6 +184,56 @@ int ip_tree_builder_parse_stream_do (
         }
     } while (1);
 }
+
+
+int ip_tree_builder_parse_files_do (
+    ip_tree_build_process_parsed_func f_process_parsed,
+    struct ip_tree_build_data* const restrict obj,
+    struct dynarray* const input_files,
+    const bool keep_going
+) {
+    size_t k;
+    FILE* input_stream;
+    int ret;
+
+    if ( input_files == NULL ) { return PARSE_IP_RET_BAD_INFILE; }
+
+    ret = PARSE_IP_RET_SUCCESS;
+
+    for (
+        k = 0;
+        ( (k < (input_files->len)) && (ret == PARSE_IP_RET_SUCCESS) );
+        k++
+    ) {
+        const char* const input_file = dynarray_get_const_str ( input_files, k );
+
+        if ( (input_file == NULL) || (*input_file == '\0') ) {
+            ret = PARSE_IP_RET_BAD_INFILE;
+
+        } else if ( (*input_file == '-') && (*(input_file + 1) == '\0') ) {
+            ret = ip_tree_builder_parse_stream_do (
+                f_process_parsed, obj, stdin, keep_going
+            );
+
+        } else {
+            input_stream = fopen ( input_file, "r" );
+
+            if ( input_stream == NULL ) {
+                ret = PARSE_IP_RET_READ_ERR;
+
+            } else {
+                ret = ip_tree_builder_parse_stream_do (
+                    f_process_parsed, obj, input_stream, keep_going
+                );
+
+                fclose ( input_stream );  /* retcode ignored */
+            }
+        }
+    }
+
+    return ret;
+}
+
 
 
 int ip_tree_builder_insert_from_stream (
