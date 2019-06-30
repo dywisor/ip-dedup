@@ -1,6 +1,5 @@
 * documentation
 * maybe create a .so lib
-* maybe skip lines starting with a comment marker (e.g. "#")
 * Python bindings
 * -m option: insert martians
   * more granular control of which martians to insert
