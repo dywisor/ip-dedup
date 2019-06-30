@@ -27,6 +27,16 @@ void readfile_state_init_null ( struct readfile_state* const rstate ) {
 }
 
 
+void readfile_state_close_file ( struct readfile_state* const rstate ) {
+    if ( rstate->close_stream && (rstate->stream != NULL) ) {
+        fclose ( rstate->stream );  /* retcode ignored */
+    }
+
+    rstate->stream       = NULL;
+    rstate->close_stream = false;
+}
+
+
 void readfile_state_free_data ( struct readfile_state* const rstate ) {
     if ( rstate == NULL ) { return; }
 
@@ -34,9 +44,7 @@ void readfile_state_free_data ( struct readfile_state* const rstate ) {
         free ( rstate->line_buf = NULL );
     }
 
-    if ( rstate->close_stream && (rstate->stream != NULL) ) {
-        fclose ( rstate->stream );  /* retcode ignored */
-    }
+    readfile_state_close_file ( rstate );
 
     readfile_state_init_null ( rstate );
 }

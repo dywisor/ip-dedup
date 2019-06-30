@@ -26,6 +26,7 @@ struct readfile_state {
 
 void readfile_state_init_null ( struct readfile_state* const rstate );
 void readfile_state_free_data ( struct readfile_state* const rstate );
+void readfile_state_close_file ( struct readfile_state* const rstate );
 
 int readfile_init_stream (
     struct readfile_state* const rstate,
