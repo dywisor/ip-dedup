@@ -626,7 +626,7 @@ static void print_usage (
          "  %3d          failed to open input file\n"
          "\n"
          "Notes:\n"
-         "  Input file names starting with a '@' char are looked up\n"
+         "  Input and exclude file names starting with a '@' char are looked up\n"
          "  in the data directory after removing the prefix char.\n"
          "  (currently %s)\n"
          "\n"
