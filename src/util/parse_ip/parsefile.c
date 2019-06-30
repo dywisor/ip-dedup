@@ -168,7 +168,7 @@ int parse_ip_file_next (
 }
 
 
-int parse_ip_eof_eval_keep_going_status (
+int parse_ip_file_eof_eval_keep_going_status (
     struct parse_ip_file_state* const pfile_state
 ) {
     const unsigned k = pfile_state->keep_going_status;
