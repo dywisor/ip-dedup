@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <errno.h>
 #include <unistd.h>
 #include <sysexits.h>
 
@@ -167,7 +168,46 @@ static int main_push_infile (
    struct dynarray* const restrict infiles,
    const char* const arg
 ) {
-   if ( dynarray_append ( infiles, (void*) arg ) != 0 ) {
+   char* buf;
+   const char* fpath;
+
+   fpath = NULL;
+
+   if ( *arg == '@' ) {
+      buf = ipdedup_globals_get_datafile_path ( g, (arg + 1) );
+      if ( buf == NULL ) {
+         switch ( errno ) {
+            case EINVAL:
+               return EX_USAGE;
+
+            case ENOENT:
+               return EX_IOERR;  /* FIXME: maybe introduce an extra error code */
+
+            default:
+               return EX_OSERR;
+         }
+
+      } else if ( access ( buf, F_OK ) != 0 ) {
+         fprintf ( stderr, "Error: datafile missing: %s\n", buf );
+         free ( buf );
+         return EX_IOERR;  /* FIXME: maybe introduce an extra error code */
+
+      } else if ( ipdedup_globals_pile_of_shame_push ( g, buf ) != 0 ) {
+         free ( buf );
+         return EX_OSERR;
+
+      } else {
+         fpath = buf;
+      }
+
+   } else {
+      fpath = arg;
+   }
+
+   if ( fpath == NULL ) {
+      return EX_SOFTWARE;
+
+   } else if ( dynarray_append ( infiles, (void*) fpath ) != 0 ) {
       return EX_OSERR;
    }
 
@@ -229,7 +269,7 @@ static int main_inner_parse_input (
 static int main_inner (
    struct ipdedup_globals* const restrict g, int argc, char** argv
 ) {
-   static const char* const PROG_OPTIONS = "46ahiko:p:";
+   static const char* const PROG_OPTIONS = "46aD:hiko:p:";
 
    int opt;
    int ret;
@@ -252,6 +292,11 @@ static int main_inner (
 
          case 'a':
             g->tree_mode = IPDEDUP_TREE_MODE_MIXED;
+            break;
+
+         case 'D':
+            /* empty arg unsets datadir */
+            ipdedup_globals_set_datadir ( g, optarg );
             break;
 
          case 'h':
@@ -409,6 +454,8 @@ static int main_run (
       }
    }
 
+   /* could free g->pile_of_shame here */
+
    /* open outstream */
    if ( g->outfile == NULL ) {
       g->close_outstream = false;
@@ -552,12 +599,13 @@ static void print_usage (
       stream,
       (
          "Usage:\n"
-         "  %s {-4|-6|-a|-h|-i|-k|-o <FILE>|-p <FILE>} [<FILE>...]\n"
+         "  %s {-4|-6|-a|-D <DIR>|-h|-i|-k|-o <FILE>|-p <FILE>} [<FILE>...]\n"
          "\n"
          "Options:\n"
          "  -4           IPv4 mode\n"
          "  -6           IPv6 mode\n"
          "  -a           IPv4/IPv6 mixed mode\n"
+         "  -D <DIR>     look up all following @name input files in <DIR>\n"
          "  -h           print this help message and exit\n"
          "  -i           invert networks\n"
          "  -k           skip invalid input instead of exiting with non-zero code\n"
@@ -579,6 +627,9 @@ static void print_usage (
          "  %3d          failed to open input file\n"
          "\n"
          "Notes:\n"
+         "  Input file names starting with a '@' char are looked up\n"
+         "  in the data directory after removing the prefix char.\n"
+         "\n"
          "  For each line in the input (files),\n"
          "  leading and trailing whitespace is removed.\n"
          "  Empty lines, possibly caused by this conversion, are silently ignored.\n"

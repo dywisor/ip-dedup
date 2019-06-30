@@ -45,11 +45,17 @@ struct ipdedup_globals {
     struct ip_tree* tree_v4;
     struct ip_tree* tree_v6;
 
+    const char* datadir;
+    size_t datadir_len;
+
     const char* prog_name;
 
     const char* outfile;
     FILE* outstream;
     bool close_outstream;
+
+    /* malloc'ed strings that are part of readonly data structures */
+    struct dynarray* pile_of_shame;
 
     struct dynarray* infiles;
     struct dynarray* purge_infiles;
@@ -86,5 +92,23 @@ void ipdedup_globals_free ( struct ipdedup_globals* const restrict g );
  * @return None (implicit)
  * */
 void ipdedup_globals_init_tree_view ( struct ipdedup_globals* const restrict g );
+
+
+int ipdedup_globals_pile_of_shame_push (
+    struct ipdedup_globals* const restrict g,
+    char* const arg
+);
+
+
+void ipdedup_globals_set_datadir (
+    struct ipdedup_globals* const restrict g,
+    const char* const restrict datadir
+);
+
+
+char* ipdedup_globals_get_datafile_path (
+    struct ipdedup_globals* const restrict g,
+    const char* const restrict relpath
+);
 
 #endif  /* _HAVE_APP_IP_DEDUP_GLOBALS_H_ */
