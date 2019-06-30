@@ -1,12 +1,8 @@
 S := ${.CURDIR}
 
-SRC = ${S}/src
-MK_INCLUDE = ${S}/mk
+PHONY =
 
-O := ${S}/build
-O_OBJ = ${O}/obj
-O_BIN = ${O}/bin
-
+PHONY += all
 all: ip-dedup
 
 _WARNFLAGS   =
@@ -29,23 +25,18 @@ _WARNFLAGS  += -Wformat-nonliteral -Wformat=2
 _CC_OPT_STATIC = -static
 .endif
 
-ip-dedup: ${O_BIN}/ip-dedup
-
-
 .include "mk/compile_c.mk"
-
 .include "mk/obj_defs.mk"
 
-ODEP_IP_DEDUP =
-.for odef in ${OBUNDLE_APP_IP_DEDUP}
-ODEP_IP_DEDUP += ${O_OBJ}/${odef}.o
+ODEP_IP_DEDUP := ${OBUNDLE_APP_IP_DEDUP:%=src/%.o}
 
-${O_OBJ}/${odef}.o: ${SRC}/${odef}.c
+.SUFFIXES: .c .o
+.c.o:
 	mkdir -p -- ${@D}
-	${COMPILE_C} ${SRC}/${odef}.c -o ${@}
+	${COMPILE_C} ${<} -o ${@}
 
-.endfor
-
-${O_BIN}/ip-dedup: ${ODEP_IP_DEDUP}
-	mkdir -p -- ${@D}
+ip-dedup: ${ODEP_IP_DEDUP}
 	$(LINK_O) ${ODEP_IP_DEDUP} -o ${@}
+
+
+.PHONY: ${PHONY}
