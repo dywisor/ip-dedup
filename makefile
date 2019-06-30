@@ -12,7 +12,6 @@ all: ip-dedup
 .include "mk/install_vars.mk"
 .include "mk/prj.mk"
 
-STANDALONE ?= 0
 .if ${STANDALONE} == 1
 .include "mk/datadir_standalone.mk"
 .else
@@ -26,15 +25,15 @@ CC_OPTS_EXTRA += -DIPDEDUP_DATADIR=\"$(IPDEDUP_DATADIR)\"
 .endif
 
 .include "mk/warnflags_base.mk"
-.if !defined(NO_WERROR) || ${NO_WERROR} == ""
+
+.if ${NO_WERROR} == 1
 .include "mk/warnflags_no_werror.mk"
 .endif
 
-.if defined(STATIC) && ${STATIC} == 1
+.if ${STATIC} == 1
 .include "mk/static.mk"
 .endif
 
-HARDEN ?= 1
 .if ${HARDEN} == 1
 .include "mk/c_harden.mk"
 .endif

@@ -14,7 +14,6 @@ all: ip-dedup
 include $(MK_INCLUDE)/install_vars.mk
 include $(MK_INCLUDE)/prj.mk
 
-STANDALONE ?= 0
 ifeq ($(STANDALONE),1)
 include $(MK_INCLUDE)/datadir_standalone.mk
 else
@@ -28,7 +27,7 @@ CC_OPTS_EXTRA += -DIPDEDUP_DATADIR=\"$(IPDEDUP_DATADIR)\"
 endif
 
 include $(MK_INCLUDE)/warnflags_base.mk
-ifeq ($(NO_WERROR),)
+ifeq ($(NO_WERROR),1)
 include $(MK_INCLUDE)/warnflags_no_werror.mk
 endif
 
@@ -36,7 +35,6 @@ ifeq ($(STATIC),1)
 include $(MK_INCLUDE)/static.mk
 endif
 
-HARDEN ?= 1
 ifeq ($(HARDEN),1)
 include $(MK_INCLUDE)/c_harden.mk
 endif
