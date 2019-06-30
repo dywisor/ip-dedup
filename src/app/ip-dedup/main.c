@@ -151,13 +151,6 @@ int main ( int argc, char** argv ) {
 }
 
 
-#define MAIN_PRINT_USAGE_ERR(_msg)  \
-   do {  \
-      fprintf ( stderr, "Error: %s\n\n", (_msg) ); \
-      print_usage ( g, stderr ); \
-   } while (0)
-
-
 static int main_push_infile (
    struct ipdedup_globals* const restrict g,
    struct dynarray* const restrict infiles,
@@ -308,7 +301,7 @@ static int main_inner (
 
          case 'o':
             if ( (optarg == NULL) || (*optarg == '\0') ) {
-               MAIN_PRINT_USAGE_ERR ( "-o needs a non-empty argument." );
+               fprintf ( stderr, "Error: -%c option needs a non-empty argument.\n", opt );
                return EX_USAGE;
 
             } else if ( (*optarg == '-') && (*(optarg + 1) == '\0') ) {
@@ -322,7 +315,7 @@ static int main_inner (
 
          case 'p':
             if ( (optarg == NULL) || (*optarg == '\0') ) {
-               MAIN_PRINT_USAGE_ERR ( "-p needs a non-empty argument." );
+               fprintf ( stderr, "Error: -%c option needs a non-empty argument.\n", opt );
                return EX_USAGE;
 
             } else {
@@ -348,7 +341,7 @@ static int main_inner (
          const char* const arg = argv[opt];
 
          if ( (arg == NULL) || (*arg == '\0') ) {
-            MAIN_PRINT_USAGE_ERR ( "expected non-empty positional argument." );
+            fprintf ( stderr, "Error: expected a non-empty positional argument.\n" );
             return EX_USAGE;
 
          } else {
@@ -393,7 +386,7 @@ static int main_run (
    /* parse input */
    ret = main_inner_parse_input ( g );  /* uses optind */
    if ( ret != 0 ) {
-      MAIN_PRINT_USAGE_ERR ( "failed to parse input" );
+      fprintf ( stderr, "Error: failed to parse input\n" );
       return ret;
    }
 
@@ -432,7 +425,7 @@ static int main_run (
 
       if ( ret != 0 ) {
          /* purge_tree_v4, purge_tree_v6 are NULL - free() not necessary */
-         MAIN_PRINT_USAGE_ERR ( "failed to parse purge input" );
+         fprintf ( stderr, "Error: failed to parse purge input\n" );
          return ret;
       }
 
@@ -469,8 +462,6 @@ static int main_run (
    return 0;
 }
 
-
-#undef MAIN_PRINT_USAGE_ERR
 
 static int main_parse_dedup_to_tree (
    struct dynarray* const restrict infiles,
