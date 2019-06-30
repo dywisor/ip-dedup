@@ -1,5 +1,4 @@
 * documentation
-* the BSD makefile is a mess
 * maybe create a .so lib
 * maybe skip lines starting with a comment marker (e.g. "#")
 * Python bindings
