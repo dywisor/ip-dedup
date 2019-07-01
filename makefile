@@ -49,10 +49,10 @@ ODEP_IP_DEDUP := ${OBUNDLE_APP_IP_DEDUP:%=src/%.o}
 .SUFFIXES: .c .o
 .c.o:
 	${MKDIRP} -- ${@D}
-	${COMPILE_C} ${<} -o ${@}
+	${COMPILE_C} ${.IMPSRC} -o ${@}
 
 ip-dedup: ${ODEP_IP_DEDUP}
-	$(LINK_O) ${ODEP_IP_DEDUP} -o ${@}
+	$(LINK_O) ${.ALLSRC} -o ${@}
 
 
 .PHONY: ${PHONY}
