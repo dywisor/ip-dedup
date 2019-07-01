@@ -390,6 +390,11 @@ static int main_run (
    purge_tree_v4 = NULL;
    purge_tree_v6 = NULL;
 
+   /* set auto-collapse if requested */
+   if ( g->tree_v6 != NULL ) {
+      ip_tree_set_auto_collapse ( g->tree_v6, g->collapse_prefixlen_v6 );
+   }
+
    /* parse input */
    ret = main_inner_parse_input ( g );  /* uses optind */
    if ( ret != 0 ) {
@@ -399,11 +404,7 @@ static int main_run (
 
    /* collapse tree */
    if ( g->tree_v4 != NULL ) { ip_tree_collapse ( g->tree_v4 ); }
-
-   if ( g->tree_v6 != NULL ) {
-      ip_tree_set_auto_collapse ( g->tree_v6, g->collapse_prefixlen_v6 );
-      ip_tree_collapse ( g->tree_v6 );
-   }
+   if ( g->tree_v6 != NULL ) { ip_tree_collapse ( g->tree_v6 ); }
 
    /* invert if requested */
    if ( g->want_invert ) {

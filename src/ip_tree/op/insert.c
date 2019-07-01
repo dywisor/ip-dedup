@@ -88,6 +88,10 @@ static int _ip_tree_insert (
     * find anchor
     * - if addr already in the tree: mark as hot
     * - otherwise: start at depth-most existing parent and create nodes downto addr
+    *
+    * Note that even if auto-collapse is enabled,
+    * ip_tree_find() might return nodes with prefixlen > auto-collapse
+    * if nodes have been inserted prior to enabling this feature.
     * */
    find_ret = ip_tree_find ( tree, var_addr, &parent, &node );
 
@@ -121,14 +125,23 @@ static int _ip_tree_insert_walkdown_create (
    const ip_addr_variant_t* const restrict var_addr,
    struct ip_tree_node* const restrict parent
 ) {
-   const ip_prefixlen_t prefixlen = (
-      tree->tdesc->f_get_addr_prefixlen ( var_addr )
-   );
-
+   ip_prefixlen_t prefixlen;
    ip_prefixlen_t cur_prefixpos;
 
    struct ip_tree_node* cur_node;
    struct ip_tree_node* sub_node;
+
+   /* determine effective prefixlen, subject to auto-collapse */
+   prefixlen = (
+      tree->tdesc->f_get_addr_prefixlen ( var_addr )
+   );
+
+   if (
+      ( tree->auto_collapse_prefixlen > 0 )
+      && ( prefixlen > tree->auto_collapse_prefixlen )
+   ) {
+      prefixlen = tree->auto_collapse_prefixlen;
+   }
 
    cur_node = NULL;
    sub_node = parent;
