@@ -135,7 +135,8 @@ int ip_tree_builder_parse_stream_do (
     ip_tree_build_process_parsed_func f_process_parsed,
     struct ip_tree_build_data* const restrict obj,
     FILE* const restrict input_stream,
-    const bool keep_going
+    const bool keep_going,
+    const bool strict_netaddr
 ) {
     struct parse_ip_file_state pfile_state;
     int parse_ret;
@@ -155,7 +156,8 @@ int ip_tree_builder_parse_stream_do (
     }
 
     /* init cfg */
-    pfile_state.cfg.keep_going = keep_going;
+    pfile_state.cfg.keep_going     = keep_going;
+    pfile_state.cfg.strict_netaddr = strict_netaddr;
 
     if ( input_stream == stdin ) { obj->did_read_stdin = true; }
 
@@ -190,7 +192,8 @@ int ip_tree_builder_parse_files_do (
     ip_tree_build_process_parsed_func f_process_parsed,
     struct ip_tree_build_data* const restrict obj,
     struct dynarray* const input_files,
-    const bool keep_going
+    const bool keep_going,
+    const bool strict_netaddr
 ) {
     size_t k;
     FILE* input_stream;
@@ -212,7 +215,8 @@ int ip_tree_builder_parse_files_do (
 
         } else if ( (*input_file == '-') && (*(input_file + 1) == '\0') ) {
             ret = ip_tree_builder_parse_stream_do (
-                f_process_parsed, obj, stdin, keep_going
+                f_process_parsed, obj, stdin,
+                keep_going, strict_netaddr
             );
 
         } else {
@@ -223,7 +227,8 @@ int ip_tree_builder_parse_files_do (
 
             } else {
                 ret = ip_tree_builder_parse_stream_do (
-                    f_process_parsed, obj, input_stream, keep_going
+                    f_process_parsed, obj, input_stream,
+                    keep_going, strict_netaddr
                 );
 
                 fclose ( input_stream );  /* retcode ignored */
@@ -239,13 +244,15 @@ int ip_tree_builder_parse_files_do (
 int ip_tree_builder_parse_stream_do_insert (
     struct ip_tree_build_data* const restrict obj,
     FILE* const restrict input_stream,
-    const bool keep_going
+    const bool keep_going,
+    const bool strict_netaddr
 ) {
     return ip_tree_builder_parse_stream_do (
         ip_tree_builder_process_parsed__insert,
         obj,
         input_stream,
-        keep_going
+        keep_going,
+        strict_netaddr
     );
 }
 
@@ -253,13 +260,15 @@ int ip_tree_builder_parse_stream_do_insert (
 int ip_tree_builder_parse_files_do_insert (
     struct ip_tree_build_data* const restrict obj,
     struct dynarray* const input_files,
-    const bool keep_going
+    const bool keep_going,
+    const bool strict_netaddr
 ) {
     return ip_tree_builder_parse_files_do (
         ip_tree_builder_process_parsed__insert,
         obj,
         input_files,
-        keep_going
+        keep_going,
+        strict_netaddr
     );
 }
 

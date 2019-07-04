@@ -65,3 +65,40 @@ int parse_ip_addr_combined (
         &(pstate->addr_v6)
     );
 }
+
+
+int parse_ip4_net_addr_combined (
+    char* const restrict line,
+    const size_t slen,
+    struct parse_ip_addr_data* const restrict pstate
+) {
+    pstate->addr_type = PARSE_IP_TYPE_IPV4;
+
+    return parse_ip4_net_addr ( line, slen, &(pstate->addr_v4) );
+}
+
+
+int parse_ip6_net_addr_combined (
+    char* const restrict line,
+    const size_t slen,
+    struct parse_ip_addr_data* const restrict pstate
+) {
+    pstate->addr_type = PARSE_IP_TYPE_IPV6;
+
+    return parse_ip6_net_addr ( line, slen, &(pstate->addr_v6) );
+}
+
+
+int parse_ip_net_addr_combined (
+    char* const restrict line,
+    const size_t slen,
+    struct parse_ip_addr_data* const restrict pstate
+) {
+    return parse_ip_mixed_net_addr (
+        line,
+        slen,
+        &(pstate->addr_type),
+        &(pstate->addr_v4),
+        &(pstate->addr_v6)
+    );
+}

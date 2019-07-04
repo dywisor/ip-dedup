@@ -32,7 +32,8 @@ static int _parse_ip_file_next (
 static void parse_ip_file_config_init_null (
     struct parse_ip_file_config* const cfg
 ) {
-    cfg->keep_going = false;
+    cfg->keep_going     = false;
+    cfg->strict_netaddr = false;
 }
 
 static int parse_ip_file_init_parse_mode (
@@ -41,15 +42,18 @@ static int parse_ip_file_init_parse_mode (
 ) {
     switch ( parse_mode ) {
         case PARSE_IP_TYPE_IPV4:
-            pfile_state->f_parse = parse_ip4_addr_combined;
+            pfile_state->f_parse_addr = parse_ip4_addr_combined;
+            pfile_state->f_parse_net_addr = parse_ip4_net_addr_combined;
             return 0;
 
         case PARSE_IP_TYPE_IPV6:
-            pfile_state->f_parse = parse_ip6_addr_combined;
+            pfile_state->f_parse_addr = parse_ip6_addr_combined;
+            pfile_state->f_parse_net_addr = parse_ip6_net_addr_combined;
             return 0;
 
         case PARSE_IP_TYPE_BOTH:
-            pfile_state->f_parse = parse_ip_addr_combined;
+            pfile_state->f_parse_addr = parse_ip_addr_combined;
+            pfile_state->f_parse_net_addr = parse_ip_net_addr_combined;
             return 0;
 
         default:
@@ -65,7 +69,8 @@ void parse_ip_file_state_init_null (
     readfile_state_init_null ( &(pfile_state->_file) );
     parse_ip_addr_data_init_null ( &(pfile_state->addr) );
 
-    pfile_state->f_parse            = NULL;
+    pfile_state->f_parse_addr       = NULL;
+    pfile_state->f_parse_net_addr   = NULL;
 
     pfile_state->read_ret           = 0;
     pfile_state->keep_going_status  = PARSE_IP_KEEP_GOING_SEEN_NONE;
@@ -105,7 +110,12 @@ static int _parse_ip_file_next (
     (pfile_state->addr).addr_type = PARSE_IP_TYPE_NONE;
 
     if ( (pfile_state->read_ret) == READFILE_RET_LINE ) {
-        return pfile_state->f_parse (
+        parse_ip_addr_func const f_parse = (
+            (pfile_state->cfg).strict_netaddr ? pfile_state->f_parse_net_addr
+            : pfile_state->f_parse_addr
+        );
+
+        return f_parse (
             (pfile_state->_file).line,
             (pfile_state->_file).line_len,
             &(pfile_state->addr)
@@ -135,6 +145,7 @@ int parse_ip_file_next (
                 return parse_ret;
 
             case PARSE_IP_RET_INVALID:
+            case PARSE_IP_RET_INVALID_NET:
                 pfile_state->keep_going_status |= PARSE_IP_KEEP_GOING_SEEN_INVALID;
 
                 if ( ( pfile_state->cfg).keep_going ) {

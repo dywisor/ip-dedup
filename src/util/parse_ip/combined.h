@@ -74,4 +74,26 @@ int parse_ip_addr_combined (
 );
 
 
+/* Variants that check that no host bits are set in the parsed addr. */
+int parse_ip4_net_addr_combined (
+    char* const restrict line,
+    const size_t slen,
+    struct parse_ip_addr_data* const restrict pstate
+);
+
+
+int parse_ip6_net_addr_combined (
+    char* const restrict line,
+    const size_t slen,
+    struct parse_ip_addr_data* const restrict pstate
+);
+
+
+int parse_ip_net_addr_combined (
+    char* const restrict line,
+    const size_t slen,
+    struct parse_ip_addr_data* const restrict pstate
+);
+
+
 #endif  /* _HAVE_UTIL_PARSE_IP_COMBINED_H_ */

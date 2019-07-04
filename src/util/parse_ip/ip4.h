@@ -13,6 +13,12 @@ int parse_ip4_addr (
    struct ip4_addr_t* const restrict addr
 );
 
+int parse_ip4_net_addr (
+   char* const restrict line,
+   const size_t slen,
+   struct ip4_addr_t* const restrict addr
+);
+
 int parse_ip4_addr_split (
     char* const addr_str,
     const char* const prefixlen_str,

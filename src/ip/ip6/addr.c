@@ -63,3 +63,34 @@ bool ip6_addr_bit_is_set_at (
 ) {
     return ip6_calc_bit_is_set_at_prefixpos ( &(obj->addr), prefixpos );
 }
+
+
+bool ip6_addr_is_net (
+    const struct ip6_addr_t* const restrict obj
+) {
+#define ip6_addr_is_net__set_mask(_exp)  \
+    do { \
+        mask = ( ((ip6_addr_data_chunk_t) 0x1) << (_exp) ) - 1; \
+    } while (0)
+
+
+    ip6_addr_data_chunk_t mask;
+
+    if ( obj->prefixlen > IP6_MAX_PREFIXLEN ) {
+        return false;
+
+    } else if ( obj->prefixlen > IP6_DATA_CHUNK_SIZE ) {
+        /* ignore bits 0..63, check 64..127 */
+        ip6_addr_is_net__set_mask ( IP6_MAX_PREFIXLEN - obj->prefixlen );
+
+        return ( (obj->addr.low & mask) == 0 );
+
+    } else {
+        /* mask = all host bits set in high addr part, lower must be all-zero */
+        ip6_addr_is_net__set_mask ( IP6_DATA_CHUNK_SIZE - obj->prefixlen);
+
+        return ( (obj->addr.low == 0) && (((obj->addr.high) & mask) == 0) );
+    }
+
+#undef ip6_addr_is_net__set_mask
+}

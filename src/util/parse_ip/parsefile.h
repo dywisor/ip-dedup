@@ -20,6 +20,7 @@ enum {
 
 struct parse_ip_file_config {
     bool keep_going;
+    bool strict_netaddr;
 };
 
 
@@ -29,7 +30,8 @@ struct parse_ip_file_state {
     struct readfile_state     _file;
     struct parse_ip_addr_data addr;
 
-    parse_ip_addr_func f_parse;
+    parse_ip_addr_func f_parse_addr;
+    parse_ip_addr_func f_parse_net_addr;
 
     int read_ret;                   /* most recent readfile return code */
     unsigned keep_going_status;     /* PARSE_IP_KEEP_GOING mask */

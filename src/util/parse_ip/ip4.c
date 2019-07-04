@@ -76,6 +76,20 @@ int parse_ip4_addr (
 }
 
 
+int parse_ip4_net_addr (
+   char* const restrict line,
+   const size_t slen,
+   struct ip4_addr_t* const restrict addr
+) {
+    int ret;
+
+    ret = parse_ip4_addr ( line, slen, addr );
+    if ( ret != PARSE_IP_RET_SUCCESS ) { return ret; }
+
+    return ( ip4_addr_is_net(addr) ? PARSE_IP_RET_SUCCESS : PARSE_IP_RET_INVALID_NET );
+}
+
+
 int parse_ip4_addr_split (
     char* const addr_str,
     const char* const prefixlen_str,

@@ -41,6 +41,44 @@ int parse_ip_mixed_addr (
 }
 
 
+int parse_ip_mixed_net_addr (
+    char* const line,
+    const size_t slen,
+    int* const type_result,
+    struct ip4_addr_t* const restrict addr_v4,
+    struct ip6_addr_t* const restrict addr_v6
+) {
+    int ret;
+
+    ret = parse_ip_mixed_addr ( line, slen, type_result, addr_v4, addr_v6 );
+    if ( ret != PARSE_IP_RET_SUCCESS ) { return ret; }
+
+    /*
+     * Check whether parsed IPv4 addr has host bits set.
+     * If so, then invalidate result.
+     * */
+    if ( ((*type_result) & PARSE_IP_TYPE_IPV4) != 0 ) {
+        if ( ! ip4_addr_is_net ( addr_v4 ) ) {
+            *type_result &= ~PARSE_IP_TYPE_IPV4;
+        }
+    }
+
+    /* once more for IPv6 */
+    if ( ((*type_result) & PARSE_IP_TYPE_IPV6) != 0 ) {
+        if ( ! ip6_addr_is_net ( addr_v6 ) ) {
+            *type_result &= ~PARSE_IP_TYPE_IPV6;
+        }
+    }
+
+    /* at least one type should have survived, otherwise return invalid_net */
+    if ( ((*type_result) & PARSE_IP_TYPE_BOTH) != 0 ) {
+        return PARSE_IP_RET_SUCCESS;
+    } else {
+        return PARSE_IP_RET_INVALID_NET;
+    }
+}
+
+
 int parse_ip_mixed_addr_split (
     char* const addr_str,
     const char* const prefixlen_str,

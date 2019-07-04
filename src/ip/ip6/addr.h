@@ -39,4 +39,8 @@ bool ip6_addr_bit_is_set_at (
     const ip_prefixlen_t prefixpos
 );
 
+bool ip6_addr_is_net (
+    const struct ip6_addr_t* const restrict obj
+);
+
 #endif  /* _HAVE_IP_IP6_ADDR_H_ */

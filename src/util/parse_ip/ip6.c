@@ -91,6 +91,20 @@ int parse_ip6_addr (
 }
 
 
+int parse_ip6_net_addr (
+   char* const restrict line,
+   const size_t slen,
+   struct ip6_addr_t* const restrict addr
+) {
+    int ret;
+
+    ret = parse_ip6_addr ( line, slen, addr );
+    if ( ret != PARSE_IP_RET_SUCCESS ) { return ret; }
+
+    return ( ip6_addr_is_net(addr) ? PARSE_IP_RET_SUCCESS : PARSE_IP_RET_INVALID_NET );
+}
+
+
 int parse_ip6_addr_split (
     char* const addr_str,
     const char* const prefixlen_str,

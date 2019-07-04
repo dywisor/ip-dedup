@@ -222,6 +222,10 @@ static int main_interpret_parse_ret ( const int parse_ret ) {
       case PARSE_IP_RET_INVALID:
          return EX_DATAERR;
 
+      case PARSE_IP_RET_INVALID_NET:
+         fprintf ( stderr, "Error: network address has host bits set.\n" );
+         return EX_DATAERR;
+
       case PARSE_IP_RET_DID_NOT_TRY:
       case PARSE_IP_RET_NOT_IMPLEMENTED:
       case PARSE_IP_RET_EOF:
@@ -239,12 +243,12 @@ static int main_inner_parse_input (
 
    if ( g->infiles == NULL ) {
       parse_ret = ip_tree_builder_parse_stream_do_insert (
-         g->tree_builder, stdin, g->want_keep_going
+         g->tree_builder, stdin, g->want_keep_going, g->want_strict
       );
 
    } else {
       parse_ret = ip_tree_builder_parse_files_do_insert (
-         g->tree_builder, g->infiles, g->want_keep_going
+         g->tree_builder, g->infiles, g->want_keep_going, g->want_strict
       );
       dynarray_free_ptr ( &(g->infiles) );
    }
@@ -256,7 +260,7 @@ static int main_inner_parse_input (
 static int main_inner (
    struct ipdedup_globals* const restrict g, int argc, char** argv
 ) {
-   static const char* const PROG_OPTIONS = "46aC:cD:hikLo:p:";
+   static const char* const PROG_OPTIONS = "46aC:cD:hikLo:p:s";
 
    int opt;
    int ret;
@@ -355,6 +359,10 @@ static int main_inner (
                ret = main_push_infile ( g, g->purge_infiles, optarg );
                if ( ret != 0 ) { return ret; }
             }
+            break;
+
+         case 's':
+            g->want_strict = true;
             break;
 
          default:
@@ -515,7 +523,7 @@ static int main_parse_dedup_to_tree (
    if ( tree_builder == NULL ) { return -1; }
 
    ret = ip_tree_builder_parse_files_do_insert (
-      tree_builder, infiles, g->want_keep_going
+      tree_builder, infiles, g->want_keep_going, g->want_strict
    );
 
    if ( ret != PARSE_IP_RET_SUCCESS ) {
@@ -619,7 +627,7 @@ static void print_usage (
       stream,
       (
          "Usage:\n"
-         "  %s {-4|-6|-a|-c <N>|-D <DIR>|-h|-i|-k|-L|-o <FILE>|-p <FILE>} [<FILE>...]\n"
+         "  %s {-4|-6|-a|-c <N>|-D <DIR>|-h|-i|-k|-L|-o <FILE>|-p <FILE>|-s} [<FILE>...]\n"
          "\n"
          "Options:\n"
          "  -4           IPv4 mode\n"
@@ -641,6 +649,9 @@ static void print_usage (
          "  -o <FILE>    write output to <FILE> instead of stdout\n"
          "  -p <FILE>    read network excludes from <FILE>\n"
          "               can be specified more than once\n"
+         "  -s           verify that no host bits are set in parsed addresses\n"
+         "               By default, lax rules are applied and network addresses\n"
+         "               get silently truncated to their prefix length.\n"
          "\n"
          "Positional Arguments:\n"
          "  FILE...      read networks from files instead of stdin\n"

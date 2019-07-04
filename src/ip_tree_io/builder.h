@@ -73,7 +73,8 @@ int ip_tree_builder_parse_stream_do (
     ip_tree_build_process_parsed_func f_process_parsed,
     struct ip_tree_build_data* const restrict obj,
     FILE* const restrict input_stream,
-    const bool keep_going
+    const bool keep_going,
+    const bool strict_netaddr
 );
 
 
@@ -81,7 +82,8 @@ int ip_tree_builder_parse_files_do (
     ip_tree_build_process_parsed_func f_process_parsed,
     struct ip_tree_build_data* const restrict obj,
     struct dynarray* const input_files,
-    const bool keep_going
+    const bool keep_going,
+    const bool strict_netaddr
 );
 
 
@@ -92,20 +94,24 @@ int ip_tree_builder_parse_files_do (
  * @param input_stream      input stream
  * @param keep_going        whether to tolerate invalid input and just
  *                          continue with the next token on tolerable errors
+ * @param strict_netaddr    whether to check that no host bits are set
+ *                          in parsed addresses
  *
  * @return PARSE_IP_RET status codes, zero means success
  * */
 int ip_tree_builder_parse_stream_do_insert (
     struct ip_tree_build_data* const restrict obj,
     FILE* const restrict input_stream,
-    const bool keep_going
+    const bool keep_going,
+    const bool strict_netaddr
 );
 
 
 int ip_tree_builder_parse_files_do_insert (
     struct ip_tree_build_data* const restrict obj,
     struct dynarray* const input_files,
-    const bool keep_going
+    const bool keep_going,
+    const bool strict_netaddr
 );
 
 

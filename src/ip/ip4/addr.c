@@ -58,3 +58,20 @@ bool ip4_addr_bit_is_set_at (
 ) {
     return ip4_calc_bit_is_set_at_prefixpos ( obj->addr, prefixpos );
 }
+
+
+bool ip4_addr_is_net (
+    const struct ip4_addr_t* const restrict obj
+) {
+    ip4_addr_data_t mask;
+
+    if ( obj->prefixlen > IP4_MAX_PREFIXLEN ) {
+        return false;
+
+    } else {
+        /* mask == all host bits set to 1 */
+        mask = ( 0x1 << (IP4_MAX_PREFIXLEN - obj->prefixlen) ) - 1;
+
+        return ( ((obj->addr) & mask) == 0 );
+    }
+}

@@ -38,5 +38,8 @@ bool ip4_addr_bit_is_set_at (
     const ip_prefixlen_t prefixpos
 );
 
+bool ip4_addr_is_net (
+    const struct ip4_addr_t* const restrict obj
+);
 
 #endif  /* _HAVE_IP_IP4_ADDR_H_ */

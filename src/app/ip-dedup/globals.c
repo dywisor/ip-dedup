@@ -45,6 +45,7 @@ int ipdedup_globals_init ( struct ipdedup_globals* const restrict g ) {
 
     g->want_invert      = false;
     g->want_keep_going  = false;
+    g->want_strict      = false;
 
 #ifdef IPDEDUP_DATADIR
     ipdedup_globals_set_datadir ( g, IPDEDUP_DATADIR );

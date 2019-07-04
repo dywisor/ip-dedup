@@ -16,6 +16,13 @@ int parse_ip_mixed_addr (
     struct ip6_addr_t* const restrict addr_v6
 );
 
+int parse_ip_mixed_net_addr (
+    char* const line,
+    const size_t slen,
+    int* const type_result,
+    struct ip4_addr_t* const restrict addr_v4,
+    struct ip6_addr_t* const restrict addr_v6
+);
 
 int parse_ip_mixed_addr_split (
     char* const addr_str,

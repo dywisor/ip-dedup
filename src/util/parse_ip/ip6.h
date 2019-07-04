@@ -13,6 +13,12 @@ int parse_ip6_addr (
    struct ip6_addr_t* const restrict addr
 );
 
+int parse_ip6_net_addr (
+   char* const restrict line,
+   const size_t slen,
+   struct ip6_addr_t* const restrict addr
+);
+
 int parse_ip6_addr_split (
     char* const addr_str,
     const char* const prefixlen_str,

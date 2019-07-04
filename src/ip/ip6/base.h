@@ -9,6 +9,7 @@
 #include "../base.h"
 
 #define IP6_MAX_PREFIXLEN 128
+#define IP6_DATA_CHUNK_SIZE 64
 
 /* split addr in two 64bit chunks -- not using __uint128 */
 typedef uint_fast64_t ip6_addr_data_chunk_t;
