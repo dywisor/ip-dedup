@@ -60,9 +60,8 @@ static int main_interpret_parse_ret ( const int parse_ret );
 
 __attribute__((warn_unused_result))
 static int main_parse_dedup_to_tree (
+   struct ipdedup_globals* const restrict g,
    struct dynarray* const restrict infiles,
-   const int tree_mode,
-   const bool keep_going,
    struct ip_tree** const restrict tree_v4_out,
    struct ip_tree** const restrict tree_v6_out
 );
@@ -454,8 +453,7 @@ static int main_run (
    } else {
       ret = main_interpret_parse_ret (
          main_parse_dedup_to_tree (
-            g->purge_infiles, g->tree_mode, g->want_keep_going,
-            &purge_tree_v4, &purge_tree_v6
+            g, g->purge_infiles, &purge_tree_v4, &purge_tree_v6
          )
       );
 
@@ -502,9 +500,8 @@ static int main_run (
 
 
 static int main_parse_dedup_to_tree (
+   struct ipdedup_globals* const restrict g,
    struct dynarray* const restrict infiles,
-   const int tree_mode,
-   const bool keep_going,
    struct ip_tree** const restrict tree_v4_out,
    struct ip_tree** const restrict tree_v6_out
 ) {
@@ -514,11 +511,11 @@ static int main_parse_dedup_to_tree (
    *tree_v4_out = NULL;
    *tree_v6_out = NULL;
 
-   tree_builder = ip_tree_builder_new ( tree_mode );
+   tree_builder = ip_tree_builder_new ( g->tree_mode );
    if ( tree_builder == NULL ) { return -1; }
 
    ret = ip_tree_builder_parse_files_do_insert (
-      tree_builder, infiles, keep_going
+      tree_builder, infiles, g->want_keep_going
    );
 
    if ( ret != PARSE_IP_RET_SUCCESS ) {
