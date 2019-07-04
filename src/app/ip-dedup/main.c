@@ -257,7 +257,7 @@ static int main_inner_parse_input (
 static int main_inner (
    struct ipdedup_globals* const restrict g, int argc, char** argv
 ) {
-   static const char* const PROG_OPTIONS = "46aC:cD:hiko:p:";
+   static const char* const PROG_OPTIONS = "46aC:cD:hikLo:p:";
 
    int opt;
    int ret;
@@ -309,6 +309,28 @@ static int main_inner (
          case 'k':
             g->want_keep_going = true;
             break;
+
+         case 'L':
+#if (defined __unix__) && (defined IPDEDUP_DATADIR)
+            /* nftw() or shell out -- using shell variant */
+            if ( system ( NULL ) == 0 ) {
+               return EX_OSERR;
+
+            /* unsafe system() arg IPDEDUP_DATADIR, chdir and use relpath */
+            } else if ( chdir ( IPDEDUP_DATADIR ) != 0 ) {
+               return EXIT_FAILURE;
+
+            } else {
+               ret = system (
+                  ("{ find . -type f | sed -r -e 's=^[.]/=@=' | sort; }")
+               );
+               return (ret < 0) ? EX_OSERR : ret;
+            }
+#else
+            fprintf ( stderr, "Error: feature not available.\n" );
+            return EX_USAGE;
+#endif
+            return EX_SOFTWARE;  /* unreachable */
 
          case 'o':
             if ( (optarg == NULL) || (*optarg == '\0') ) {
@@ -600,7 +622,7 @@ static void print_usage (
       stream,
       (
          "Usage:\n"
-         "  %s {-4|-6|-a|-c <N>|-D <DIR>|-h|-i|-k|-o <FILE>|-p <FILE>} [<FILE>...]\n"
+         "  %s {-4|-6|-a|-c <N>|-D <DIR>|-h|-i|-k|-L|-o <FILE>|-p <FILE>} [<FILE>...]\n"
          "\n"
          "Options:\n"
          "  -4           IPv4 mode\n"
@@ -614,6 +636,11 @@ static void print_usage (
          "  -h           print this help message and exit\n"
          "  -i           invert networks\n"
          "  -k           skip invalid input instead of exiting with non-zero code\n"
+#if (defined __unix__ ) && (defined IPDEDUP_DATADIR)
+         "  -L           list default datadir include files\n"
+#else
+         "  -L           (feature not available)\n"
+#endif
          "  -o <FILE>    write output to <FILE> instead of stdout\n"
          "  -p <FILE>    read network excludes from <FILE>\n"
          "               can be specified more than once\n"
