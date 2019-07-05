@@ -11,6 +11,17 @@
 #define IP6_MAX_PREFIXLEN 128
 #define IP6_DATA_CHUNK_SIZE 64
 
+/*
+ * worst-case addr str size:
+ *   8 blocks w/ 0..4 chars
+ *   7 colon separator
+ *   1 terminating null
+ *
+ * (the "::" case will fit in this buffer
+ * since at least one block will be missing)
+ * */
+#define IP6_ADDR_STR_BUF_SIZE   ( (8 * 4) + 7 + 1 )
+
 /* split addr in two 64bit chunks -- not using __uint128 */
 typedef uint_fast64_t ip6_addr_data_chunk_t;
 
@@ -74,5 +85,10 @@ void ip6_calc_set_bit_at_prefixpos (
     ip6_addr_data_t* const restrict dst
 );
 
+
+const char* ip6_addr_data_into_str (
+    const struct ip6_addr_data* const restrict bits,
+    char* const restrict dst
+);
 
 #endif  /* _HAVE_IP_IP6_BASE_H_ */
