@@ -27,6 +27,8 @@ void fprint_ip4_tree (
 
          fprint_ip4_net ( stream, addr );
       }
+
+      dynarray_free_ptr ( &darr );
    }
 }
 
@@ -47,5 +49,7 @@ void fprint_ip6_tree (
 
          fprint_ip6_net ( stream, addr );
       }
+
+      dynarray_free_ptr ( &darr );
    }
 }
