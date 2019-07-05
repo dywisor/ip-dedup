@@ -44,4 +44,20 @@ void fprint_ip6_tree (
     struct ip_tree* const restrict tree
 );
 
+
+/**
+ * Prints an IPv6 tree in compact form to the given output stream.
+ *
+ * Output format: one network per line,
+ *                <compact hex notation> "/" <prefixlen>
+ * Examples:
+ * - ::/128
+ * - fd00:1234:abcd::/48
+ * - fe80::/10
+ * */
+int fprint_ip6_tree_compact (
+    FILE* const restrict stream,
+    struct ip_tree* const restrict tree
+);
+
 #endif
