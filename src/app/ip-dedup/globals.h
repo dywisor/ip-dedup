@@ -65,6 +65,7 @@ struct ipdedup_globals {
     bool want_invert;
     bool want_keep_going;
     bool want_strict;
+    bool want_long_output;
 };
 
 /**

@@ -260,7 +260,7 @@ static int main_inner_parse_input (
 static int main_inner (
    struct ipdedup_globals* const restrict g, int argc, char** argv
 ) {
-   static const char* const PROG_OPTIONS = "46aC:cD:hikLo:p:s";
+   static const char* const PROG_OPTIONS = "46aC:cD:hikLlo:p:s";
 
    int opt;
    int ret;
@@ -334,6 +334,10 @@ static int main_inner (
             return EX_USAGE;
 #endif
             return EX_SOFTWARE;  /* unreachable */
+
+         case 'l':
+            g->want_long_output = true;
+            break;
 
          case 'o':
             if ( (optarg == NULL) || (*optarg == '\0') ) {
@@ -500,8 +504,21 @@ static int main_run (
    }
 
    /* print */
-   if ( g->tree_v4 != NULL ) { fprint_ip4_tree ( g->outstream, g->tree_v4 ); }
-   if ( g->tree_v6 != NULL ) { fprint_ip6_tree ( g->outstream, g->tree_v6 ); }
+   if ( g->tree_v4 != NULL ) {
+      fprint_ip4_tree ( g->outstream, g->tree_v4 );
+   }
+
+   if ( g->tree_v6 != NULL ) {
+      if ( g->want_long_output ) {
+         fprint_ip6_tree ( g->outstream, g->tree_v6 );
+      } else {
+         /* more likely an error in this software than a malloc failure */
+         /* COULDFIX: check errno */
+         if ( fprint_ip6_tree_compact ( g->outstream, g->tree_v6 ) != 0 ) {
+            return EX_SOFTWARE;
+         }
+      }
+   }
 
    return 0;
 }
@@ -627,7 +644,7 @@ static void print_usage (
       stream,
       (
          "Usage:\n"
-         "  %s {-4|-6|-a|-c <N>|-D <DIR>|-h|-i|-k|-L|-o <FILE>|-p <FILE>|-s} [<FILE>...]\n"
+         "  %s {-4|-6|-a|-c <N>|-D <DIR>|-h|-i|-k|-L|-l|-o <FILE>|-p <FILE>|-s} [<FILE>...]\n"
          "\n"
          "Options:\n"
          "  -4           IPv4 mode\n"
@@ -646,6 +663,7 @@ static void print_usage (
 #else
          "  -L           (feature not available)\n"
 #endif
+         "  -l           long output form (currently only affects IPv6 addresses)\n"
          "  -o <FILE>    write output to <FILE> instead of stdout\n"
          "  -p <FILE>    read network excludes from <FILE>\n"
          "               can be specified more than once\n"
