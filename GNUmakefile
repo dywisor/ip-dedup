@@ -44,6 +44,8 @@ include $(MK_INCLUDE)/obj_defs.mk
 
 include $(MK_INCLUDE)/common_targets.mk
 
+include $(MK_INCLUDE)/FIXME_GNU_only.mk
+
 
 PHONY += ip-dedup
 ip-dedup: $(O)/ip-dedup
