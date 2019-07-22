@@ -644,7 +644,7 @@ static void print_usage (
       stream,
       (
          "Usage:\n"
-         "  %s {-4|-6|-a|-c <N>|-D <DIR>|-h|-i|-k|-L|-l|-o <FILE>|-p <FILE>|-s} [<FILE>...]\n"
+         "  %s {-4|-6|-a|-C <N>|-c|-D <DIR>|-h|-i|-k|-L|-l|-o <FILE>|-p <FILE>|-s} [<FILE>...]\n"
          "\n"
          "Options:\n"
          "  -4           IPv4 mode\n"
