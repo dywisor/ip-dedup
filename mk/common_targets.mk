@@ -5,7 +5,7 @@ clean:
 	test ! -f '$(O)/ip-dedup' || rm -- '$(O)/ip-dedup'
 
 PHONY += install
-install: install-bin install-data
+install: install-bin install-data install-man
 
 PHONY += install-bin
 install-bin:
@@ -29,3 +29,7 @@ install-data-ip6:
 	$(DOINS) -- $(S_IPLIST)/inet6/lo $(DESTDIR)$(IPDEDUP_DATADIR)/inet6/lo
 	$(DOINS) -- $(S_IPLIST)/inet6/martians $(DESTDIR)$(IPDEDUP_DATADIR)/inet6/martians
 	$(DOINS) -- $(S_IPLIST)/inet6/ula $(DESTDIR)$(IPDEDUP_DATADIR)/inet6/ula
+
+PHONY += install-man
+install-man:
+	$(DOINS) -- $(S)/doc/man/ip-dedup.1 $(DESTDIR)$(MANDIR)/man1/ip-dedup.1
