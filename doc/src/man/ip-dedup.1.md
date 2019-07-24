@@ -34,7 +34,6 @@ of non-zero blocks in the network address.
 
 Input and exclude file names starting with a '@' char are looked up
 in the data directory after removing the prefix char.
-(currently /home/andre/project/ip-dedup/files/list)
 
 For each line in the input files,
 leading and trailing whitespace is removed.
