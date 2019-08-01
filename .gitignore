@@ -1,4 +1,5 @@
 ## additional files to ignore
+/ip-dedup
 /obj
 /doc/pdf
 /local
