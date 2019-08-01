@@ -1,5 +1,6 @@
 ## additional files to ignore
 /ip-dedup
+/ip-dedup.bashcomp
 /obj
 /doc/pdf
 /local

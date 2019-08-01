@@ -54,5 +54,7 @@ ODEP_IP_DEDUP := ${OBUNDLE_APP_IP_DEDUP:%=src/%.o}
 ip-dedup: ${ODEP_IP_DEDUP}
 	$(LINK_O) ${.ALLSRC} -o ${@}
 
+ip-dedup.bashcomp: ${S_FILES}/ip-dedup.bashcomp.in
+	< ${S_FILES}/ip-dedup.bashcomp.in ${RUN_SED_EXPRV} > ${@}
 
 .PHONY: ${PHONY}

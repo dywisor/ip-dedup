@@ -46,9 +46,10 @@ include $(MK_INCLUDE)/common_targets.mk
 
 include $(MK_INCLUDE)/FIXME_GNU_only.mk
 
+FLATTENED_TARGETS := ip-dedup ip-dedup.bashcomp
 
-PHONY += ip-dedup
-ip-dedup: $(O)/ip-dedup
+PHONY += $(FLATTENED_TARGETS)
+$(FLATTENED_TARGETS): %: $(O)/%
 
 $(O):
 	$(MKDIRP) -- $@
@@ -64,6 +65,9 @@ $(O)/ip-dedup: \
 	$(foreach f,$(OBUNDLE_APP_IP_DEDUP),$(O_OBJ)/$(f).o $(wildcard $(SRC)/$(f).h)) | $(O)
 
 	$(LINK_O) $(filter-out %.h,$^) -o $@
+
+$(O)/ip-dedup.bashcomp: $(S_FILES)/ip-dedup.bashcomp.in
+	< $< $(RUN_SED_EXPRV) > $@
 
 
 FORCE:

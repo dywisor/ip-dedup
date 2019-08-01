@@ -7,6 +7,7 @@ BINDIR      = $(EXEC_PREFIX:/=)/bin
 #LIBDIR      = $(EXEC_PREFIX:/=)/$(LIBDIR_NAME)
 SHAREDIR    = $(PREFIX:/=)/share
 MANDIR      = $(PREFIX:/=)/man
+BASHCOMPDIR = $(SHAREDIR)/bash-completion/completions
 
 EXEMODE ?= 0755
 INSMODE ?= 0644

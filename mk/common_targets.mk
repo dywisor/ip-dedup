@@ -1,8 +1,13 @@
+SED_EXPRV =
+SED_EXPRV += 's,@@IPDEDUP_DATADIR@@,$(IPDEDUP_DATADIR),g'
+RUN_SED_EXPRV = sed -r $(SED_EXPRV)
+
 PHONY += clean
 clean:
 	test ! -d '$(O_OBJ)' || find '$(O_OBJ)' -type f -name '*.o' -delete
 	test ! -d '$(O_OBJ)' || find '$(O_OBJ)' -depth -type d -empty -delete
 	test ! -f '$(O)/ip-dedup' || rm -- '$(O)/ip-dedup'
+	test ! -f '$(O)/ip-dedup.bashcomp' || rm -- '$(O)/ip-dedup.bashcomp'
 
 PHONY += install
 install: install-bin install-data install-man
@@ -33,3 +38,10 @@ install-data-ip6:
 PHONY += install-man
 install-man:
 	$(DOINS) -- $(S)/doc/man/ip-dedup.1 $(DESTDIR)$(MANDIR)/man1/ip-dedup.1
+
+PHONY += bashcomp
+bashcomp: ip-dedup.bashcomp
+
+PHONY += install-bashcomp
+install-bashcomp:
+	$(DOINS) -- $(O)/ip-dedup.bashcomp $(DESTDIR)$(BASHCOMPDIR)/ip-dedup
