@@ -9,7 +9,7 @@ NAME
 SYNOPSIS
 ========
 
-| **ip-dedup** \[**-4**|**-6**|**-a**] \[**-C** _n_|**-c**] \[**-D** _dir_] \[**-i**\] \[**-k**\] \[**-l**\]
+| **ip-dedup** \[**-4**|**-6**|**-a**] \[**-B** _n_] \[**-C** _n_|**-c**] \[**-D** _dir_] \[**-i**\] \[**-k**\] \[**-l**\]
 |          \[**-o** _file_] \[**-p** _file_] \[**-s**\] \[_file_...]
 | **ip-dedup** **-L**
 | **ip-dedup** **-h**
@@ -67,13 +67,17 @@ Options
     If a network can be parsed as both IPv4 and IPv6 address (e.g. 0/0),
     then both addresses will be used.
 
+-B _n_
+
+:   truncate IPv4 networks if they exceed the given prefix length
+
 -C _n_
 
-:   truncate networks if they exceed the given prefix length (_IPv6-mode_ only)
+:   truncate IPv6 networks if they exceed the given prefix length
 
 -c
 
-:   truncate networks with a prefixlen greater than 64 to /64 network addresses (same as **-C** 64)
+:   truncate IPv6 networks with a prefixlen greater than 64 to /64 network addresses (same as **-C** 64)
 
 -D _dir_
 

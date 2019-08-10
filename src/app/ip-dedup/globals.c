@@ -27,6 +27,7 @@ int ipdedup_globals_init ( struct ipdedup_globals* const restrict g ) {
     g->tree_v4          = NULL;
     g->tree_v6          = NULL;
 
+    g->collapse_prefixlen_v4 = 0;
     g->collapse_prefixlen_v6 = 0;
 
     g->datadir          = NULL;

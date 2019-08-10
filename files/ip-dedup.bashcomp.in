@@ -8,6 +8,7 @@ _ip_dedup_comp() {
         '-4'
         '-6'
         '-a'
+        '-B'    # <N> : int, 1..32
         '-C'    # <N> : int, 1..64
         '-c'
         '-D'    # <DIR>
@@ -78,7 +79,7 @@ _ip_dedup_comp() {
                         return 0
                     ;;
 
-                    *[Cop])
+                    *[BCop])
                         [[ $# -eq 0 ]] || shift
                     ;;
 
@@ -113,6 +114,11 @@ _ip_dedup_comp() {
 
         # complete cur depending on prev
         case "${prev}" in
+            '-'*'B')
+                words=( {1..32} )
+                COMPREPLY+=( $( compgen -o nosort -W "${words[*]}" -- "${cur}" ) )
+            ;;
+
             '-'*'C')
                 words=( {1..64} )
                 COMPREPLY+=( $( compgen -o nosort -W "${words[*]}" -- "${cur}" ) )
@@ -136,7 +142,7 @@ _ip_dedup_comp() {
                         want_shortopt_comp='true'
                     ;;
 
-                    '-'*[CDop])
+                    '-'*[BCDop])
                         COMPREPLY+=( "${cur}" )
                     ;;
 

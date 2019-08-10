@@ -45,6 +45,7 @@ struct ipdedup_globals {
     struct ip_tree* tree_v4;
     struct ip_tree* tree_v6;
 
+    ip_prefixlen_t collapse_prefixlen_v4;
     ip_prefixlen_t collapse_prefixlen_v6;
 
     const char* datadir;

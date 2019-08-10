@@ -260,7 +260,7 @@ static int main_inner_parse_input (
 static int main_inner (
    struct ipdedup_globals* const restrict g, int argc, char** argv
 ) {
-   static const char* const PROG_OPTIONS = "46aC:cD:hikLlo:p:s";
+   static const char* const PROG_OPTIONS = "46aB:C:cD:hikLlo:p:s";
 
    int opt;
    int ret;
@@ -283,6 +283,13 @@ static int main_inner (
 
          case 'a':
             g->tree_mode = IPDEDUP_TREE_MODE_MIXED;
+            break;
+
+         case 'B':
+            ret = parse_ip_read_octet ( optarg, 10, &(g->collapse_prefixlen_v4) );
+            if ( (ret != 0) || (g->collapse_prefixlen_v4 > 32) ) {
+               fprintf ( stderr, "Error: -%c needs a number between 0 and 32\n", opt );
+            }
             break;
 
          case 'C':
@@ -428,6 +435,10 @@ static int main_run (
    purge_tree_v6 = NULL;
 
    /* set auto-collapse if requested */
+   if ( g->tree_v4 != NULL ) {
+      ip_tree_set_auto_collapse ( g->tree_v4, g->collapse_prefixlen_v4 );
+   }
+
    if ( g->tree_v6 != NULL ) {
       ip_tree_set_auto_collapse ( g->tree_v6, g->collapse_prefixlen_v6 );
    }
@@ -644,16 +655,19 @@ static void print_usage (
       stream,
       (
          "Usage:\n"
-         "  %s {-4|-6|-a|-C <N>|-c|-D <DIR>|-h|-i|-k|-L|-l|-o <FILE>|-p <FILE>|-s} [<FILE>...]\n"
+         "  %s {-4|-6|-a|-B <N>|-C <N>|-c|-D <DIR>|-h|-i|-k|-L|-l|-o <FILE>|-p <FILE>|-s} [<FILE>...]\n"
          "\n"
          "Options:\n"
          "  -4           IPv4 mode\n"
          "  -6           IPv6 mode\n"
          "  -a           IPv4/IPv6 mixed mode\n"
-         "  -C <N>       IPv6 only: collapse input networks with a prefixlen\n"
-         "               greater than <N> into a /<N> network\n"
+         "  -B <N>       collapse IPv4 input networks with a prefixlen\n"
+         "               greater than <N> to a /<N> network\n"
          "               (if <N> greater than zero)\n"
-         "  -c           IPv6 only: collapse at prefixlen 64 (same as -C 64)\n"
+         "  -C <N>       collapse IPv6 input networks with a prefixlen\n"
+         "               greater than <N> to a /<N> network\n"
+         "               (if <N> greater than zero)\n"
+         "  -c           collapse IPv6 at prefixlen 64 (same as -C 64)\n"
          "  -D <DIR>     look up all following @name input files in <DIR>\n"
          "  -h           print this help message and exit\n"
          "  -i           invert networks\n"
