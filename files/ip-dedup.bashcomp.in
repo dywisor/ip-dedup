@@ -51,7 +51,8 @@ _ip_dedup_comp() {
     while [[ $# -gt 1 ]]; do    # do not peek at current word
         case "${1}" in
             '')
-                shift
+                have_pos_arg='true'
+                break
             ;;
 
             '--')
