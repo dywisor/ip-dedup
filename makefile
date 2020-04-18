@@ -26,8 +26,8 @@ CC_OPTS_EXTRA += -DIPDEDUP_DATADIR=\"$(IPDEDUP_DATADIR)\"
 
 .include "mk/warnflags_base.mk"
 
-.if ${NO_WERROR} == 1
-.include "mk/warnflags_no_werror.mk"
+.if ${NO_WERROR} != 1
+.include "mk/warnflags_werror.mk"
 .endif
 
 .if ${STATIC} == 1
