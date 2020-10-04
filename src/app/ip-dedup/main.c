@@ -289,7 +289,7 @@ static int main_inner (
        { "purge",               required_argument,  NULL, 'p' },
        { "strict",              no_argument,        NULL, 's' },
 
-       { 0 }  /* end marker */
+       { NULL, 0, NULL, 0 },    /* end marker */
    };
 #define x_getopt(_argc, _argv)  getopt_long ( _argc, _argv, PROG_OPTIONS, LONG_OPTIONS, NULL )
 #else
