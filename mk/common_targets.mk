@@ -15,6 +15,7 @@ install: install-bin install-data install-man
 PHONY += install-bin
 install-bin:
 	$(DOEXE) -- $(O)/ip-dedup $(DESTDIR)$(BINDIR)/ip-dedup
+	$(DOEXE) -- $(S_SCRIPTS)/ip-dedup-asn $(DESTDIR)$(BINDIR)/ip-dedup-asn
 
 PHONY += install-data
 install-data: install-data-ip4 install-data-ip6

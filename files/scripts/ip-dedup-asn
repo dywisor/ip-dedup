@@ -1,0 +1,60 @@
+#!/bin/sh
+# Fetch routing prefixes belonging to the given autonomous system (AS)
+# and deduplicate them. Optionally restrict that to IPv4 or IPv6 only.
+#
+# Usage: ip-dedup-asn [-4|-6] <ASN> [--] [ip_dedup_arg...]
+#
+# Example usage:
+#
+#   ip-dedup-asn AS2906            # Netflix
+#   ip-dedup-asn -4 AS32934        # Facebook, IPv4 only
+#   ip-dedup-asn 'AS2906 AS32934'  # both Netflix and Facebook - ASN in quotes
+#
+# NOTE: no error handling for whois result implemented
+#
+# Ref: https://stackoverflow.com/a/11164738
+#
+set -fu
+
+RADB_HOST="whois.radb.net"
+
+filter_route()  { awk '($1 ~ /^route6?:$/) { print $2; }'; }
+filter_route4() { awk '($1 ~ /^route:$/) { print $2; }'; }
+filter_route6() { awk '($1 ~ /^route6:$/) { print $2; }'; }
+
+asn_list=''
+ip_opt=''
+
+while [ $# -gt 0 ]; do
+    doshift=1
+
+    case "${1}" in
+        '-h'|'--help')
+            printf 'Usage: %s [-4|-6] <ASN> [--] [ip_dedup_arg...]\n' "${0}"
+            exit 9
+        ;;
+
+        '-4'|'-6') ip_opt="${1}" ;;
+
+        '--') shift && break ;;
+
+        *)
+            if [ -z "${asn_list}" ]; then
+                asn_list="${1}"
+            else
+                break
+            fi
+        ;;
+    esac
+
+    [ ${doshift} -eq 0 ] || shift ${doshift} || exit
+done
+
+if [ -z "${asn_list}" ]; then
+    printf 'Missing <ASN> argument.\n' 1>&2
+    exit 64
+fi
+
+for asn in ${asn_list}; do
+    whois -h "${RADB_HOST}" -- "-i origin ${asn}"
+done | "filter_route${ip_opt#\-}" | ip-dedup ${ip_opt} "${@}"
