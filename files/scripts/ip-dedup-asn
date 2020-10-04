@@ -31,7 +31,7 @@ while [ $# -gt 0 ]; do
     case "${1}" in
         '-h'|'--help')
             printf 'Usage: %s [-4|-6] <ASN> [--] [ip_dedup_arg...]\n' "${0}"
-            exit 9
+            exit 0
         ;;
 
         '-4'|'-6') ip_opt="${1}" ;;
