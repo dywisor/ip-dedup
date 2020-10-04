@@ -16,3 +16,13 @@ STATIC ?= 0
 # pass some hardening flags to the compiler
 #  Note that HARDEN==1 is not compatible with STATIC==1
 HARDEN ?= 1
+
+# whether to include support for long options
+#
+#   Besides adding not-yet-documented long options,
+#   this allows to mix positional arguments with options,
+#   e.g. "ip-dedup <FILE> -6".
+#
+USE_LONGOPT ?= 0
+
+CC_OPTS_EXTRA += -DUSE_LONGOPT=$(USE_LONGOPT)

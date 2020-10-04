@@ -6,6 +6,15 @@
 #include <unistd.h>
 #include <sysexits.h>
 
+/* FIXME: should check flags somewhere else maybe? */
+#ifndef USE_LONGOPT
+#define USE_LONGOPT 0
+#endif
+
+#if USE_LONGOPT
+#include <getopt.h>
+#endif
+
 #include "globals.h"
 #include "version.h"
 
@@ -261,6 +270,31 @@ static int main_inner (
    struct ipdedup_globals* const restrict g, int argc, char** argv
 ) {
    static const char* const PROG_OPTIONS = "46aB:C:cD:hikLlo:p:s";
+#if USE_LONGOPT
+/* NOTE: these long names are not final and may change */
+   static const struct option LONG_OPTIONS[] = {
+       { "ipv4",                no_argument,        NULL, '4' },
+       { "ipv6",                no_argument,        NULL, '6' },
+       { "mixed",               no_argument,        NULL, 'a' },
+       { "collapse-ipv4",       required_argument,  NULL, 'B' },
+       { "collapse-ipv6",       required_argument,  NULL, 'C' },
+       /* no longopt for -c */
+       { "datadir",             required_argument,  NULL, 'D' },
+       { "help",                no_argument,        NULL, 'h' },
+       { "invert",              no_argument,        NULL, 'i'  },
+       { "keep-going",          no_argument,        NULL, 'k' },
+       { "list-include-files",  no_argument,        NULL, 'L' },
+       { "long-format",         no_argument,        NULL, 'l' },
+       { "outfile",             required_argument,  NULL, 'o' },
+       { "purge",               required_argument,  NULL, 'p' },
+       { "strict",              no_argument,        NULL, 's' },
+
+       { 0 }  /* end marker */
+   };
+#define x_getopt(_argc, _argv)  getopt_long ( _argc, _argv, PROG_OPTIONS, LONG_OPTIONS, NULL )
+#else
+#define x_getopt(_argc, _argv)  getopt ( _argc, _argv, PROG_OPTIONS )
+#endif
 
    int opt;
    int ret;
@@ -271,7 +305,7 @@ static int main_inner (
    if ( g->purge_infiles == NULL ) { return EX_OSERR; }
    dynarray_set_data_readonly ( g->purge_infiles );
 
-   while ( ( opt = getopt ( argc, argv, PROG_OPTIONS ) ) != -1 ) {
+   while ( ( opt = x_getopt ( argc, argv ) ) != -1 ) {
       switch ( opt ) {
          case '4':
             g->tree_mode = IPDEDUP_TREE_MODE_IPV4;
