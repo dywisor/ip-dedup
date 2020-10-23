@@ -2,7 +2,7 @@ PN := ip-dedup
 
 S_FILES   = $(S)/files
 S_IPLIST  = $(S_FILES)/list
-S_SCRIPTS = $(S)/scripts
+S_SCRIPTS = $(S_FILES)/scripts
 
 # whether to build a binary that will be run from the git repo
 STANDALONE ?= 0
