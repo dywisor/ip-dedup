@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <errno.h>
 #include <stdio.h>
+#include <sys/types.h>
 
 #include "readfile.h"
 #include "strutil.h"
