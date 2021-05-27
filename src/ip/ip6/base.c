@@ -202,7 +202,10 @@ static int ip6_addr_data_build_addr_str (
     s = sbuf;
     *s = '\0';
     for ( k = 0; k < 8; k++ ) {
-        if ( k == fill_zero_start ) {
+        /* Insert fill-empty-blocks sequence "::",
+         * but only if there actually is an empty block.
+         * */
+        if ( (fill_zero_len > 0) && (k == fill_zero_start) ) {
             if ( k == 0 ) { *s++ = ':'; }
             *s++ = ':';
             k += fill_zero_len - 1; /* k++ */
