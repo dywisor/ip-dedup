@@ -1,4 +1,4 @@
 #define IPDEDUP_NAME        "ip-dedup"
 #define IPDEDUP_VER_MAJOR   0
-#define IPDEDUP_VER_MINOR   6
+#define IPDEDUP_VER_MINOR   7
 #define IPDEDUP_VER_SUFFIX  NULL
