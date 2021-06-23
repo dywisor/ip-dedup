@@ -67,6 +67,7 @@ struct ipdedup_globals {
     bool want_keep_going;
     bool want_strict;
     bool want_long_output;
+    bool want_redux_output;
 };
 
 /**

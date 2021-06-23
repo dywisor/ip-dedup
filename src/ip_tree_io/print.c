@@ -29,24 +29,33 @@ static void _fprint_ip6_tree (
 /* print functions */
 void fprint_ip4_tree (
     FILE* const restrict stream,
-    struct ip_tree* const restrict tree
+    struct ip_tree* const restrict tree,
+    const bool redux
 ) {
-    _fprint_ip4_tree ( fprint_ip4_net, stream, tree );
+    _fprint_ip4_tree (
+        ( redux ? fprint_ip4_addr_or_net : fprint_ip4_net ),
+        stream, tree
+    );
 }
 
 
 void fprint_ip6_tree (
     FILE* const restrict stream,
-    struct ip_tree* const restrict tree
+    struct ip_tree* const restrict tree,
+    const bool redux
 ) {
-    _fprint_ip6_tree ( fprint_ip6_net, stream, tree );
+    _fprint_ip6_tree (
+        ( redux ? fprint_ip6_addr_or_net : fprint_ip6_net ),
+        stream, tree
+    );
 }
 
 
 /* specific print loop for compact IPv6 tree output */
 int fprint_ip6_tree_compact (
     FILE* const restrict stream,
-    struct ip_tree* const restrict tree
+    struct ip_tree* const restrict tree,
+    __attribute__((unused)) const bool redux
 ) {
    struct dynarray* darr;
    char addr_str [IP6_ADDR_STR_BUF_SIZE];
@@ -64,11 +73,16 @@ int fprint_ip6_tree_compact (
       );
 
       if ( ip6_addr_data_into_str ( &(addr->addr), addr_str ) != NULL ) {
-         fprintf (
-            stream,
-            ("%s/" IP_PREFIXLEN_FMT "\n"),
-            addr_str, addr->prefixlen
-         );
+         if ( redux && (addr->prefixlen == IP6_MAX_PREFIXLEN) ) {
+            fprintf ( stream, "%s\n", addr_str );
+
+         } else {
+            fprintf (
+               stream,
+               ("%s/" IP_PREFIXLEN_FMT "\n"),
+               addr_str, addr->prefixlen
+            );
+         }
       } else {
          ret = -1;
       }

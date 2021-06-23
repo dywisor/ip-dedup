@@ -12,12 +12,15 @@
  *
  * @param outstream   output stream (must not be NULL)
  * @param tree        IP tree (should not be NULL)
+ * @param redux       omit the "/<len>" suffix for full addresses
+ *                    (i.e. "/32" for IPv4, "/128" for IPv6)
  *
  * @return None (implicit)
  * */
 typedef void (*fprint_ip_tree) (
     FILE* const restrict,
-    struct ip_tree* const restrict
+    struct ip_tree* const restrict,
+    const bool redux
 );
 
 
@@ -29,7 +32,8 @@ typedef void (*fprint_ip_tree) (
  * */
 void fprint_ip4_tree (
     FILE* const restrict stream,
-    struct ip_tree* const restrict tree
+    struct ip_tree* const restrict tree,
+    const bool redux
 );
 
 
@@ -41,7 +45,8 @@ void fprint_ip4_tree (
  * */
 void fprint_ip6_tree (
     FILE* const restrict stream,
-    struct ip_tree* const restrict tree
+    struct ip_tree* const restrict tree,
+    const bool redux
 );
 
 
@@ -57,7 +62,8 @@ void fprint_ip6_tree (
  * */
 int fprint_ip6_tree_compact (
     FILE* const restrict stream,
-    struct ip_tree* const restrict tree
+    struct ip_tree* const restrict tree,
+    const bool redux
 );
 
 #endif

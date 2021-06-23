@@ -10,7 +10,7 @@ SYNOPSIS
 ========
 
 | **ip-dedup** \[**-4**|**-6**|**-a**] \[**-B** _n_] \[**-C** _n_|**-c**] \[**-D** _dir_] \[**-i**\] \[**-k**\] \[**-l**\]
-|          \[**-o** _file_] \[**-p** _file_] \[**-s**\] \[_file_...]
+|          \[**-o** _file_] \[**-p** _file_] \[**-r**\] \[**-s**\] \[_file_...]
 | **ip-dedup** **-L**
 | **ip-dedup** **-h**
 
@@ -117,6 +117,18 @@ Options
 
     The excludes will be read from the given file.
     This option may be specified more than once.
+
+-r
+
+:   enable reduced address output format:
+
+    Removes the prefix-length suffix for complete IP addresses
+    ("/32" for IPv4, "/128" for IPv6), but prints it otherwise.
+
+    For instance, "198.51.100.1/32" will be printed as "198.51.100.1",
+    while "203.0.113.0/24" will still be printed including the "/" suffix.
+
+    This option can be combined with the long-output **-l** option.
 
 -s
 

@@ -269,7 +269,7 @@ static int main_inner_parse_input (
 static int main_inner (
    struct ipdedup_globals* const restrict g, int argc, char** argv
 ) {
-   static const char* const PROG_OPTIONS = "46aB:C:cD:hikLlo:p:s";
+   static const char* const PROG_OPTIONS = "46aB:C:cD:hikLlo:p:rs";
 #if USE_LONGOPT
 /* NOTE: these long names are not final and may change */
    static const struct option LONG_OPTIONS[] = {
@@ -287,6 +287,7 @@ static int main_inner (
        { "long-format",         no_argument,        NULL, 'l' },
        { "outfile",             required_argument,  NULL, 'o' },
        { "purge",               required_argument,  NULL, 'p' },
+       { "redux",               no_argument,        NULL, 'r' },
        { "strict",              no_argument,        NULL, 's' },
 
        { NULL, 0, NULL, 0 },    /* end marker */
@@ -404,6 +405,10 @@ static int main_inner (
                ret = main_push_infile ( g, g->purge_infiles, optarg );
                if ( ret != 0 ) { return ret; }
             }
+            break;
+
+         case 'r':
+            g->want_redux_output = true;
             break;
 
          case 's':
@@ -550,16 +555,20 @@ static int main_run (
 
    /* print */
    if ( g->tree_v4 != NULL ) {
-      fprint_ip4_tree ( g->outstream, g->tree_v4 );
+      fprint_ip4_tree ( g->outstream, g->tree_v4, g->want_redux_output );
    }
 
    if ( g->tree_v6 != NULL ) {
       if ( g->want_long_output ) {
-         fprint_ip6_tree ( g->outstream, g->tree_v6 );
+         fprint_ip6_tree ( g->outstream, g->tree_v6, g->want_redux_output );
       } else {
          /* more likely an error in this software than a malloc failure */
          /* COULDFIX: check errno */
-         if ( fprint_ip6_tree_compact ( g->outstream, g->tree_v6 ) != 0 ) {
+         if (
+            fprint_ip6_tree_compact (
+                g->outstream, g->tree_v6, g->want_redux_output
+            ) != 0
+         ) {
             return EX_SOFTWARE;
          }
       }
