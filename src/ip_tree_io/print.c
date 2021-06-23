@@ -12,25 +12,26 @@
 #include "../util/dynarray.h"
 
 
+/* print loop helpers definition */
+static void _fprint_ip4_tree (
+    ip4_print_func f_fprint_ip4,
+    FILE* const restrict stream,
+    struct ip_tree* const restrict tree
+);
+
+static void _fprint_ip6_tree (
+    ip6_print_func f_fprint_ip6,
+    FILE* const restrict stream,
+    struct ip_tree* const restrict tree
+);
+
+
+/* print functions */
 void fprint_ip4_tree (
     FILE* const restrict stream,
     struct ip_tree* const restrict tree
 ) {
-   struct dynarray* darr;
-   size_t k;
-
-   darr = ip4_tree_collect_addr ( tree );
-   if ( darr != NULL ) {
-      dynarray_foreach ( darr, k ) {
-         const struct ip4_addr_t* const addr = dynarray_get_as (
-            darr, k, const struct ip4_addr_t*
-         );
-
-         fprint_ip4_net ( stream, addr );
-      }
-
-      dynarray_free_ptr ( &darr );
-   }
+    _fprint_ip4_tree ( fprint_ip4_net, stream, tree );
 }
 
 
@@ -38,24 +39,11 @@ void fprint_ip6_tree (
     FILE* const restrict stream,
     struct ip_tree* const restrict tree
 ) {
-   struct dynarray* darr;
-   size_t k;
-
-   darr = ip6_tree_collect_addr ( tree );
-   if ( darr != NULL ) {
-      dynarray_foreach ( darr, k ) {
-         const struct ip6_addr_t* const addr = dynarray_get_as (
-            darr, k, const struct ip6_addr_t*
-         );
-
-         fprint_ip6_net ( stream, addr );
-      }
-
-      dynarray_free_ptr ( &darr );
-   }
+    _fprint_ip6_tree ( fprint_ip6_net, stream, tree );
 }
 
 
+/* specific print loop for compact IPv6 tree output */
 int fprint_ip6_tree_compact (
     FILE* const restrict stream,
     struct ip_tree* const restrict tree
@@ -90,4 +78,51 @@ int fprint_ip6_tree_compact (
    dynarray_free_ptr ( &darr );
 
    return ret;
+}
+
+
+/* print loop helpers */
+static void _fprint_ip4_tree (
+    ip4_print_func f_fprint_ip4,
+    FILE* const restrict stream,
+    struct ip_tree* const restrict tree
+) {
+   struct dynarray* darr;
+   size_t k;
+
+   darr = ip4_tree_collect_addr ( tree );
+   if ( darr != NULL ) {
+      dynarray_foreach ( darr, k ) {
+         const struct ip4_addr_t* const addr = dynarray_get_as (
+            darr, k, const struct ip4_addr_t*
+         );
+
+         f_fprint_ip4 ( stream, addr );
+      }
+
+      dynarray_free_ptr ( &darr );
+   }
+}
+
+
+static void _fprint_ip6_tree (
+    ip6_print_func f_fprint_ip6,
+    FILE* const restrict stream,
+    struct ip_tree* const restrict tree
+) {
+   struct dynarray* darr;
+   size_t k;
+
+   darr = ip6_tree_collect_addr ( tree );
+   if ( darr != NULL ) {
+      dynarray_foreach ( darr, k ) {
+         const struct ip6_addr_t* const addr = dynarray_get_as (
+            darr, k, const struct ip6_addr_t*
+         );
+
+         f_fprint_ip6 ( stream, addr );
+      }
+
+      dynarray_free_ptr ( &darr );
+   }
 }

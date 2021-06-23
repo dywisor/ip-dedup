@@ -41,6 +41,12 @@ int fprint_ip4_net (
 );
 
 
+int fprint_ip4_addr_or_net (
+    FILE* const restrict stream,
+    const struct ip4_addr_t* const addr
+);
+
+
 /* IPv6 */
 int fprint_ip6_addr_data (
     FILE* const restrict stream,
@@ -55,6 +61,12 @@ int fprint_ip6_addr (
 
 
 int fprint_ip6_net (
+    FILE* const restrict stream,
+    const struct ip6_addr_t* const addr
+);
+
+
+int fprint_ip6_addr_or_net (
     FILE* const restrict stream,
     const struct ip6_addr_t* const addr
 );
