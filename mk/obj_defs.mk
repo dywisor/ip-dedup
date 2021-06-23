@@ -2,6 +2,7 @@ ODEF_UTIL_MISC  =
 ODEF_UTIL_MISC += util/strutil
 ODEF_UTIL_MISC += util/readfile
 ODEF_UTIL_MISC += util/dynarray
+ODEF_UTIL_MISC += util/print_ip
 
 ODEF_UTIL_PARSE_IP  =
 ODEF_UTIL_PARSE_IP += util/parse_ip/common

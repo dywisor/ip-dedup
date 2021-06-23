@@ -8,26 +8,56 @@
 
 #include "../ip.h"
 
+
+/* print func typedef */
+
+typedef int (*ip4_print_func) (
+    FILE* const restrict stream,
+    const struct ip4_addr_t* const addr
+);
+
+typedef int (*ip6_print_func) (
+    FILE* const restrict stream,
+    const struct ip6_addr_t* const addr
+);
+
+
 /* IPv4 */
-#define fprint_ip4_addr_data(_stream, _addr_data) \
-    fprintf(_stream, (IP4_ADDR_FMT "\n"), ip4_addr_fmt_args(addr_data))
+int fprint_ip4_addr_data (
+    FILE* const restrict stream,
+    const ip4_addr_data_t addr_data
+);
 
-#define fprint_ip4_addr(_stream, _addr)  \
-    fprintf(_stream, (IP4_ADDR_FMT "\n"), ip4_addr_fmt_args((_addr)->addr))
 
-#define fprint_ip4_net(_stream, _addr)  \
-    fprintf(_stream, (IP4_NET_FMT "\n"), ip4_addr_fmt_args((_addr)->addr), (_addr)->prefixlen)
+int fprint_ip4_addr (
+    FILE* const restrict stream,
+    const struct ip4_addr_t* const addr
+);
+
+
+int fprint_ip4_net (
+    FILE* const restrict stream,
+    const struct ip4_addr_t* const addr
+);
 
 
 /* IPv6 */
-#define fprint_ip6_addr_data(_stream, _addr_data)  \
-    fprintf(_stream, (IP6_ADDR_FMT "\n"), ip6_addr_fmt_args(addr_data))
+int fprint_ip6_addr_data (
+    FILE* const restrict stream,
+    const ip6_addr_data_t addr_data
+);
 
-#define fprint_ip6_addr(_stream, _addr)  \
-    fprintf(_stream, (IP6_ADDR_FMT "\n"), ip6_addr_fmt_args((_addr)->addr))
 
-#define fprint_ip6_net(_stream, _addr)  \
-    fprintf(_stream, (IP6_NET_FMT "\n"), ip6_addr_fmt_args((_addr)->addr), (_addr)->prefixlen)
+int fprint_ip6_addr (
+    FILE* const restrict stream,
+    const struct ip6_addr_t* const addr
+);
+
+
+int fprint_ip6_net (
+    FILE* const restrict stream,
+    const struct ip6_addr_t* const addr
+);
 
 
 #endif  /* _HAVE_UTIL_PRINT_IP_H_ */
