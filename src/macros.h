@@ -22,5 +22,21 @@
 #endif
 
 
+#ifndef USE_OPENBSD_UNVEIL
+#define USE_OPENBSD_UNVEIL 0
+#endif
+
+#if USE_OPENBSD_UNVEIL
+#define OPENBSD_UNVEIL(_path, _permissions)  \
+    do { \
+        if ( unveil ( _path, _permissions ) == -1 ) { \
+            return -1; \
+        } \
+    } while (0)
+
+#else
+#define OPENBSD_UNVEIL(_path, _permissions)  {}
+#endif
+
 
 #endif  /* _HAVE_MACROS_H_ */

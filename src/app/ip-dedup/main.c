@@ -48,6 +48,10 @@ static int main_inner (
    struct ipdedup_globals* const restrict g, int argc, char** argv
 );
 
+
+/*
+ * side-effect: on OpenBSD, unhides the file w/ read permissions (unveil(2))
+ * */
 static int main_push_infile (
    struct ipdedup_globals* const restrict g,
    struct dynarray* const restrict infiles,
@@ -150,6 +154,9 @@ int main ( int argc, char** argv ) {
    /* OPENBSD_PLEDGE ( "stdio unveil rpath wpath cpath", "" ); */
    OPENBSD_PLEDGE ( "stdio unveil rpath wpath cpath exec proc", NULL );
 
+   /* hide all filesystem paths by default, allow permission overrides */
+   OPENBSD_UNVEIL ( "/", "" );
+
    if ( ipdedup_globals_init ( &g ) != 0 ) {
       return EX_OSERR;
    }
@@ -181,6 +188,7 @@ static int main_push_infile (
    fpath = NULL;
 
    if ( *arg == '@' ) {
+      /* no need to unveil(2) datafile path here, directory already visible */
       buf = ipdedup_globals_get_datafile_path ( g, (arg + 1) );
       if ( buf == NULL ) {
          switch ( errno ) {
@@ -208,6 +216,7 @@ static int main_push_infile (
       }
 
    } else {
+      OPENBSD_UNVEIL ( arg, "r" );  /* allow read access to input file */
       fpath = arg;
    }
 
@@ -368,6 +377,8 @@ static int main_inner (
 
          case 'L':
 #if (defined __unix__) && (defined IPDEDUP_DATADIR)
+            OPENBSD_UNVEIL ( IPDEDUP_DATADIR, "r" );    /* allow datadir */
+
             /* nftw() or shell out -- using shell variant */
             if ( system ( NULL ) == 0 ) {
                return EX_OSERR;
@@ -377,6 +388,8 @@ static int main_inner (
                return EXIT_FAILURE;
 
             } else {
+               OPENBSD_UNVEIL ( "/bin", "rx" );         /* shell */
+               OPENBSD_UNVEIL ( "/usr/bin", "rx" );     /* find, sed, sort */
                ret = system (
                   ("{ find . -type f | sed -r -e 's=^[.]/=@=' | sort; }")
                );
@@ -436,6 +449,11 @@ static int main_inner (
    /* this can be removed should -L be ported to a builtin implementation */
    OPENBSD_PLEDGE ( "stdio unveil rpath wpath cpath", "" );
 
+   /* allow read access to IPDEDUP_DATADIR */
+   if ( g->datadir != NULL ) {
+       OPENBSD_UNVEIL ( g->datadir, "r" );
+   }
+
    if ( optind < argc ) {
       g->infiles = new_dynarray ( (argc - optind) );
       if ( g->infiles == NULL ) { return EX_OSERR; }
@@ -455,6 +473,14 @@ static int main_inner (
          }
       }
    }
+
+   /* allow write + create access to output file */
+   if ( g->outfile != NULL ) {
+       OPENBSD_UNVEIL ( g->outfile, "wc" );
+   }
+
+   /* lock down further unveil(2) attempts */
+   OPENBSD_UNVEIL ( NULL, NULL );
 
    if ( g->tree_mode == IPDEDUP_TREE_MODE_NONE ) {
       g->tree_mode = guess_tree_mode ( g->prog_name );
