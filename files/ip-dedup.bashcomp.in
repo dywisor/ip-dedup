@@ -19,6 +19,7 @@ _ip_dedup_comp() {
         '-l'
         '-o'    # <FILE>
         '-p'    # <FILE>
+        '-r'
         '-s'
     )
 
