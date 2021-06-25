@@ -14,6 +14,8 @@ USE_OPENBSD ?= 1
 .include "mk/install_vars.mk"
 .include "mk/prj.mk"
 
+.include "mk/compile_c_opts.mk"
+
 .if ${STANDALONE} == 1
 .include "mk/datadir_standalone.mk"
 .else
@@ -25,9 +27,6 @@ CC_OPTS_EXTRA += -UIPDEDUP_DATADIR
 .else
 CC_OPTS_EXTRA += -DIPDEDUP_DATADIR=\"$(IPDEDUP_DATADIR)\"
 .endif
-
-CC_OPTS_EXTRA += -DUSE_OPENBSD_PLEDGE=$(USE_OPENBSD_PLEDGE)
-CC_OPTS_EXTRA += -DUSE_OPENBSD_UNVEIL=$(USE_OPENBSD_UNVEIL)
 
 .include "mk/warnflags_base.mk"
 
