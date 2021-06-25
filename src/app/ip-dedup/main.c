@@ -146,6 +146,10 @@ int main ( int argc, char** argv ) {
    int ret;
    struct ipdedup_globals g;
 
+   /* IPDEDUP_DATADIR list mode (-L) needs chdir(), system() */
+   /* OPENBSD_PLEDGE ( "stdio unveil rpath wpath cpath", "" ); */
+   OPENBSD_PLEDGE ( "stdio unveil rpath wpath cpath exec proc", NULL );
+
    if ( ipdedup_globals_init ( &g ) != 0 ) {
       return EX_OSERR;
    }
@@ -427,6 +431,10 @@ static int main_inner (
             return EX_USAGE;
       }
    }
+
+   /* give up exec/proc permissions, not needed anymore */
+   /* this can be removed should -L be ported to a builtin implementation */
+   OPENBSD_PLEDGE ( "stdio unveil rpath wpath cpath", "" );
 
    if ( optind < argc ) {
       g->infiles = new_dynarray ( (argc - optind) );
