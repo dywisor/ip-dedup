@@ -22,6 +22,11 @@ HARDEN ?= 1
 # NOTE: USE_OPENBSD is set in the main GNUmakefile/makefile
 USE_OPENBSD_PLEDGE ?= $(USE_OPENBSD)
 
+# whether to use OpenBSD's unveil(2) system call
+# to restrict allowed operations on filesystem paths further 
+# NOTE: USE_OPENBSD is set in the main GNUmakefile/makefile
+USE_OPENBSD_UNVEIL ?= $(USE_OPENBSD)
+
 # whether to include support for long options
 #
 #   Besides adding not-yet-documented long options,
