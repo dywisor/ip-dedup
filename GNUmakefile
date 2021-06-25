@@ -11,9 +11,10 @@ PHONY =
 PHONY += all
 all: ip-dedup
 
+USE_OPENBSD ?= 0
+
 include $(MK_INCLUDE)/install_vars.mk
 include $(MK_INCLUDE)/prj.mk
-USE_OPENBSD_PLEDGE ?= 0
 
 ifeq ($(STANDALONE),1)
 include $(MK_INCLUDE)/datadir_standalone.mk

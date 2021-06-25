@@ -19,8 +19,8 @@ HARDEN ?= 1
 
 # whether to use OpenBSD's pledge(2) system call
 # to restrict allowed operations
-# NOTE: this is set in the main GNUmakefile/makefile
-#USE_OPENBSD_PLEDGE ?= 0
+# NOTE: USE_OPENBSD is set in the main GNUmakefile/makefile
+USE_OPENBSD_PLEDGE ?= $(USE_OPENBSD)
 
 # whether to include support for long options
 #
