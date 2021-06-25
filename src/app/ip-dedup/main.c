@@ -6,6 +6,11 @@
 #include <unistd.h>
 #include <sysexits.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+
 /* FIXME: should check flags somewhere else maybe? */
 #ifndef USE_LONGOPT
 #define USE_LONGOPT 0
@@ -467,6 +472,7 @@ static int main_run (
    struct ipdedup_globals* const restrict g
 ) {
    int ret;
+   int outfile_fd;
    struct ip_tree* purge_tree_v4;
    struct ip_tree* purge_tree_v6;
 
@@ -549,8 +555,25 @@ static int main_run (
 
    } else {
       g->close_outstream = true;
-      g->outstream = fopen ( g->outfile, "w" );
-      if ( g->outstream == NULL ) { return EX_CANTCREAT; }
+
+      outfile_fd = open (
+         g->outfile,
+         /* truncate or create, do not follow symlinks */
+         ( O_CREAT | O_WRONLY | O_TRUNC | O_NOFOLLOW | O_CLOEXEC ),
+         /* start off with mode 0666, subject to umask */
+         ( S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH )
+      );
+      if ( outfile_fd == -1 ) { return EX_CANTCREAT; }
+
+      g->outstream = fdopen ( outfile_fd, "w" );
+      if ( g->outstream == NULL ) {
+          /* why? */
+          close ( outfile_fd );
+          return EX_CANTCREAT;
+      }
+
+      /* fclose(outstream) will also close the underlying fd */
+      outfile_fd = -1;
    }
 
    /* print */
