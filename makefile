@@ -11,6 +11,7 @@ all: ip-dedup
 
 .include "mk/install_vars.mk"
 .include "mk/prj.mk"
+USE_OPENBSD_PLEDGE ?= 1
 
 .if ${STANDALONE} == 1
 .include "mk/datadir_standalone.mk"
@@ -23,6 +24,8 @@ CC_OPTS_EXTRA += -UIPDEDUP_DATADIR
 .else
 CC_OPTS_EXTRA += -DIPDEDUP_DATADIR=\"$(IPDEDUP_DATADIR)\"
 .endif
+
+CC_OPTS_EXTRA += -DUSE_OPENBSD_PLEDGE=$(USE_OPENBSD_PLEDGE)
 
 .include "mk/warnflags_base.mk"
 

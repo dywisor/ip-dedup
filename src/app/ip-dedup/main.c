@@ -20,6 +20,8 @@
 #include <getopt.h>
 #endif
 
+#include "../../macros.h"
+
 #include "globals.h"
 #include "version.h"
 

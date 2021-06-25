@@ -17,6 +17,11 @@ STATIC ?= 0
 #  Note that HARDEN==1 is not compatible with STATIC==1
 HARDEN ?= 1
 
+# whether to use OpenBSD's pledge(2) system call
+# to restrict allowed operations
+# NOTE: this is set in the main GNUmakefile/makefile
+#USE_OPENBSD_PLEDGE ?= 0
+
 # whether to include support for long options
 #
 #   Besides adding not-yet-documented long options,
