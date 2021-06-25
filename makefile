@@ -9,6 +9,8 @@ PHONY =
 PHONY += all
 all: ip-dedup
 
+USE_OPENBSD ?= 1
+
 .include "mk/install_vars.mk"
 .include "mk/prj.mk"
 
@@ -23,6 +25,8 @@ CC_OPTS_EXTRA += -UIPDEDUP_DATADIR
 .else
 CC_OPTS_EXTRA += -DIPDEDUP_DATADIR=\"$(IPDEDUP_DATADIR)\"
 .endif
+
+CC_OPTS_EXTRA += -DUSE_OPENBSD_PLEDGE=$(USE_OPENBSD_PLEDGE)
 
 .include "mk/warnflags_base.mk"
 

@@ -1,3 +1,6 @@
+#ODEF_BASE =
+#ODEF_BASE += macros # hdr only
+
 ODEF_UTIL_MISC  =
 ODEF_UTIL_MISC += util/strutil
 ODEF_UTIL_MISC += util/readfile
