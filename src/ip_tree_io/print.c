@@ -55,7 +55,7 @@ void fprint_ip6_tree (
 int fprint_ip6_tree_compact (
     FILE* const restrict stream,
     struct ip_tree* const restrict tree,
-    __attribute__((unused)) const bool redux
+    const bool redux
 ) {
    struct dynarray* darr;
    char addr_str [IP6_ADDR_STR_BUF_SIZE];
