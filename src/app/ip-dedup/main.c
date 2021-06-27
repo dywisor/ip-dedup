@@ -326,6 +326,11 @@ static int main_inner (
    if ( g->purge_infiles == NULL ) { return EX_OSERR; }
    dynarray_set_data_readonly ( g->purge_infiles );
 
+   /* allow read access to IPDEDUP_DATADIR */
+   if ( g->datadir != NULL ) {
+       OPENBSD_UNVEIL ( g->datadir, "r" );
+   }
+
    while ( ( opt = x_getopt ( argc, argv ) ) != -1 ) {
       switch ( opt ) {
          case '4':
@@ -428,6 +433,11 @@ static int main_inner (
                /* push optarg to array (also if optarg is stdin marker "-") */
                ret = main_push_infile ( g, g->purge_infiles, optarg );
                if ( ret != 0 ) { return ret; }
+
+               /* allow read access to IPDEDUP_DATADIR */
+               if ( g->datadir != NULL ) {
+                   OPENBSD_UNVEIL ( g->datadir, "r" );
+               }
             }
             break;
 
@@ -448,11 +458,6 @@ static int main_inner (
    /* give up exec/proc permissions, not needed anymore */
    /* this can be removed should -L be ported to a builtin implementation */
    OPENBSD_PLEDGE ( "stdio unveil rpath wpath cpath", "" );
-
-   /* allow read access to IPDEDUP_DATADIR */
-   if ( g->datadir != NULL ) {
-       OPENBSD_UNVEIL ( g->datadir, "r" );
-   }
 
    if ( optind < argc ) {
       g->infiles = new_dynarray ( (argc - optind) );
