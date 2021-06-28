@@ -762,7 +762,7 @@ static void print_usage (
       stream,
       (
          "Usage:\n"
-         "  %s {-4|-6|-a|-B <N>|-C <N>|-c|-D <DIR>|-h|-i|-k|-L|-l|-o <FILE>|-p <FILE>|-s} [<FILE>...]\n"
+         "  %s {-4|-6|-a|-B <N>|-C <N>|-c|-D <DIR>|-h|-i|-k|-L|-l|-o <FILE>|-p <FILE>|-s|-r} [<FILE>...]\n"
          "\n"
          "Options:\n"
          "  -4           IPv4 mode\n"
@@ -788,6 +788,7 @@ static void print_usage (
          "  -o <FILE>    write output to <FILE> instead of stdout\n"
          "  -p <FILE>    read network excludes from <FILE>\n"
          "               can be specified more than once\n"
+         "  -r           reduced output format (omit /32, /128 suffix)\n"
          "  -s           verify that no host bits are set in parsed addresses\n"
          "               By default, lax rules are applied and network addresses\n"
          "               get silently truncated to their prefix length.\n"
