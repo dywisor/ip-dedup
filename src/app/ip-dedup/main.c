@@ -320,7 +320,7 @@ static int main_inner (
    int opt;
    int ret;
 
-   g->prog_name = get_prog_name ( argv[0] );
+   g->prog_name = (argc < 1) ? "ip-dedup" : get_prog_name ( argv[0] );
 
    g->purge_infiles = new_dynarray ( 1 );
    if ( g->purge_infiles == NULL ) { return EX_OSERR; }
