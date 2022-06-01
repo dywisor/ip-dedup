@@ -1,4 +1,3 @@
-CC           = gcc
 TARGET_CC    = $(CROSS_COMPILE)$(CC)
 
 CC_OPTS      =

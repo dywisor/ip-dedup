@@ -9,6 +9,7 @@ PHONY =
 PHONY += all
 all: ip-dedup
 
+CC ?= cc
 CC_IS_GCC ?= 0
 USE_OPENBSD ?= 1
 
