@@ -758,6 +758,12 @@ static void print_usage (
    const struct ipdedup_globals* const restrict g,
    FILE* const restrict stream
 ) {
+#if (defined __unix__ ) && (defined IPDEDUP_DATADIR)
+#define MAIN_HELP_OPT_L "  -L           list default datadir include files\n"
+#else
+#define MAIN_HELP_OPT_L "  -L           (feature not available)\n"
+#endif
+
    fprintf (
       stream,
       (
@@ -779,11 +785,7 @@ static void print_usage (
          "  -h           print this help message and exit\n"
          "  -i           invert networks\n"
          "  -k           skip invalid input instead of exiting with non-zero code\n"
-#if (defined __unix__ ) && (defined IPDEDUP_DATADIR)
-         "  -L           list default datadir include files\n"
-#else
-         "  -L           (feature not available)\n"
-#endif
+         MAIN_HELP_OPT_L
          "  -l           long output form (currently only affects IPv6 addresses)\n"
          "  -o <FILE>    write output to <FILE> instead of stdout\n"
          "  -p <FILE>    read network excludes from <FILE>\n"
