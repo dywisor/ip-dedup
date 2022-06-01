@@ -11,6 +11,7 @@ PHONY =
 PHONY += all
 all: ip-dedup
 
+CC_IS_GCC ?= 1
 USE_OPENBSD ?= 0
 
 include $(MK_INCLUDE)/install_vars.mk
@@ -31,6 +32,9 @@ CC_OPTS_EXTRA += -DIPDEDUP_DATADIR=\"$(IPDEDUP_DATADIR)\"
 endif
 
 include $(MK_INCLUDE)/warnflags_base.mk
+ifeq ($(CC_IS_GCC),1)
+include $(MK_INCLUDE)/warnflags_gcc.mk
+endif
 ifneq ($(NO_WERROR),1)
 include $(MK_INCLUDE)/warnflags_werror.mk
 endif
