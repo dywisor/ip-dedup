@@ -28,6 +28,7 @@
 #include "../../ip_tree.h"
 #include "../../ip_tree_io/builder.h"
 #include "../../ip_tree_io/print.h"
+#include "../../ip_tree_io/print_json.h"
 
 #include "../../util/dynarray.h"
 
@@ -289,7 +290,7 @@ static int main_inner_parse_input (
 static int main_inner (
    struct ipdedup_globals* const restrict g, int argc, char** argv
 ) {
-   static const char* const PROG_OPTIONS = "46aB:C:cD:hikLlo:p:rs";
+   static const char* const PROG_OPTIONS = "46aB:C:cD:hiJkLlo:p:rs";
 #if USE_LONGOPT
 /* NOTE: these long names are not final and may change */
    static const struct option LONG_OPTIONS[] = {
@@ -301,7 +302,8 @@ static int main_inner (
        /* no longopt for -c */
        { "datadir",             required_argument,  NULL, 'D' },
        { "help",                no_argument,        NULL, 'h' },
-       { "invert",              no_argument,        NULL, 'i'  },
+       { "invert",              no_argument,        NULL, 'i' },
+       { "json",                no_argument,        NULL, 'J' },
        { "keep-going",          no_argument,        NULL, 'k' },
        { "list-include-files",  no_argument,        NULL, 'L' },
        { "long-format",         no_argument,        NULL, 'l' },
@@ -374,6 +376,10 @@ static int main_inner (
 
          case 'i':
             g->want_invert = true;
+            break;
+
+        case 'J':
+            g->want_json_output = true;
             break;
 
          case 'k':
@@ -618,24 +624,29 @@ static int main_run (
    }
 
    /* print */
-   if ( g->tree_v4 != NULL ) {
-      fprint_ip4_tree ( g->outstream, g->tree_v4, g->want_redux_output );
-   }
+   if ( g->want_json_output ) {
+       fprint_ip_tree_json ( g->outstream, g->tree_v4, g->tree_v6 );
 
-   if ( g->tree_v6 != NULL ) {
-      if ( g->want_long_output ) {
-         fprint_ip6_tree ( g->outstream, g->tree_v6, g->want_redux_output );
-      } else {
-         /* more likely an error in this software than a malloc failure */
-         /* COULDFIX: check errno */
-         if (
-            fprint_ip6_tree_compact (
-                g->outstream, g->tree_v6, g->want_redux_output
-            ) != 0
-         ) {
-            return EX_SOFTWARE;
-         }
-      }
+   } else {
+       if ( g->tree_v4 != NULL ) {
+          fprint_ip4_tree ( g->outstream, g->tree_v4, g->want_redux_output );
+       }
+
+       if ( g->tree_v6 != NULL ) {
+          if ( g->want_long_output ) {
+             fprint_ip6_tree ( g->outstream, g->tree_v6, g->want_redux_output );
+          } else {
+             /* more likely an error in this software than a malloc failure */
+             /* COULDFIX: check errno */
+             if (
+                fprint_ip6_tree_compact (
+                    g->outstream, g->tree_v6, g->want_redux_output
+                ) != 0
+             ) {
+                return EX_SOFTWARE;
+             }
+          }
+       }
    }
 
    return 0;
@@ -784,6 +795,7 @@ static void print_usage (
          "  -D <DIR>     look up all following @name input files in <DIR>\n"
          "  -h           print this help message and exit\n"
          "  -i           invert networks\n"
+         "  -J           JSON output format\n"
          "  -k           skip invalid input instead of exiting with non-zero code\n"
          MAIN_HELP_OPT_L
          "  -l           long output form (currently only affects IPv6 addresses)\n"

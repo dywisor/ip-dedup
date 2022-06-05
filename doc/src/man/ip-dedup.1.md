@@ -93,6 +93,12 @@ Options
 
     The resulting network addresses are subject to purging (**-p**).
 
+-J
+
+:   enable JSON output format
+
+    This option takes precedence over the reduced **-r** and long-output **-l** options.
+
 -k
 
 :   keep going - skip invalid lines in input instead of exiting

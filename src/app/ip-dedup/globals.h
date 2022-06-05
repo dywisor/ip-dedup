@@ -68,6 +68,7 @@ struct ipdedup_globals {
     bool want_strict;
     bool want_long_output;
     bool want_redux_output;
+    bool want_json_output;
 };
 
 /**

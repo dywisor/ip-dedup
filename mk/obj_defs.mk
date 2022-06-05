@@ -38,6 +38,7 @@ ODEF_IP_TREE += ip_tree/op/purge
 ODEF_IP_TREE_IO  =
 ODEF_IP_TREE_IO += ip_tree_io/builder
 ODEF_IP_TREE_IO += ip_tree_io/print
+ODEF_IP_TREE_IO += ip_tree_io/print_json
 
 ODEF_APP_IP_DEDUP  =
 ODEF_APP_IP_DEDUP += app/ip-dedup/globals

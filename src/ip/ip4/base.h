@@ -9,6 +9,7 @@
 #include "../base.h"
 
 #define IP4_MAX_PREFIXLEN 32
+#define IP4_MAX_ADDR 0xffffffff
 
 typedef uint_fast32_t ip4_addr_data_t;
 

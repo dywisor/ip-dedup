@@ -49,6 +49,7 @@ int ipdedup_globals_init ( struct ipdedup_globals* const restrict g ) {
     g->want_strict      = false;
     g->want_long_output = false;
     g->want_redux_output = false;
+    g->want_json_output  = false;
 
 #ifdef IPDEDUP_DATADIR
     ipdedup_globals_set_datadir ( g, IPDEDUP_DATADIR );
