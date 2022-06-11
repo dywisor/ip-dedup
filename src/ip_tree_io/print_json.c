@@ -252,6 +252,12 @@ static void fprint_ip6_addr_json (
     const struct ip6_addr_t* const restrict addr,
     const char* const compact_addr_str
 ) {
+    ip6_addr_data_t netmask;
+    char addr_str [IP6_ADDR_STR_BUF_SIZE];
+
+    /* calculate netmask */
+    ip6_calc_netmask ( addr->prefixlen, &netmask );
+
     /* begin of object */
 
     fprintf (
@@ -284,6 +290,20 @@ static void fprint_ip6_addr_json (
         compact_addr_str
     );
 
+    /* netmask: prefixlen in network address format (in compact format) */
+    /* NOTE: should not error-out here (already printing to outstream) */
+    if ( ip6_addr_data_into_str ( &netmask, addr_str ) != NULL ) {
+        fprintf ( \
+            stream,
+            ("%s%s%s\"%s\": \"%s\",\n"),
+            PRINT_IP_TREE_JSON_INDENT,
+            PRINT_IP_TREE_JSON_INDENT,
+            PRINT_IP_TREE_JSON_INDENT,
+            "netmask",
+            addr_str
+        );
+    }
+
     /* network_exploded: network with prefixlen (in exploded format) */
     fprintf ( \
         stream,
@@ -305,6 +325,17 @@ static void fprint_ip6_addr_json (
         PRINT_IP_TREE_JSON_INDENT,
         "address_exploded",
         ip6_addr_fmt_args((addr)->addr)
+    );
+
+    /* netmask: prefixlen in network address format (in exploded format) */
+    fprintf ( \
+        stream,
+        ("%s%s%s\"%s\": \"" IP6_ADDR_FMT "\",\n"),
+        PRINT_IP_TREE_JSON_INDENT,
+        PRINT_IP_TREE_JSON_INDENT,
+        PRINT_IP_TREE_JSON_INDENT,
+        "netmask_exploded",
+        ip6_addr_fmt_args(netmask)
     );
 
     /* prefixlen: prefixlen */
