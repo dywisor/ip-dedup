@@ -146,11 +146,7 @@ static void fprint_ip4_addr_json (
     ip4_addr_data_t last_addr;
 
     /* calculate netmask */
-    netmask = (
-        IP4_MAX_ADDR & (
-            IP4_MAX_ADDR << (IP4_MAX_PREFIXLEN - addr->prefixlen)
-        )
-    );
+    ip4_calc_netmask ( addr->prefixlen, &netmask );
 
     if ( addr->prefixlen >= IP4_MAX_PREFIXLEN ) {
         first_addr = addr->addr;

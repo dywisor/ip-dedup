@@ -60,3 +60,15 @@ void ip4_calc_set_bit_at_prefixpos (
 
     *dst = ( bit_set ? (bits | bit_mask) : (bits & ~bit_mask) );
 }
+
+
+void ip4_calc_netmask (
+    const ip_prefixlen_t prefixlen,
+    ip4_addr_data_t* const restrict dst
+) {
+    *dst = (
+        IP4_MAX_ADDR & (
+            IP4_MAX_ADDR << (IP4_MAX_PREFIXLEN - prefixlen)
+        )
+    );
+}

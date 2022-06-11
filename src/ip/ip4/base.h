@@ -50,4 +50,9 @@ void ip4_calc_set_bit_at_prefixpos (
     ip4_addr_data_t* const restrict dst
 );
 
+void ip4_calc_netmask (
+    const ip_prefixlen_t prefixlen,
+    ip4_addr_data_t* const restrict dst
+);
+
 #endif  /* _HAVE_IP_IP4_BASE_H_ */
