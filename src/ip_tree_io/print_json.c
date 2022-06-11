@@ -102,7 +102,7 @@ static int fprint_ip6_tree_json (
     struct ip_tree* const restrict tree
 ) {
     struct dynarray* darr;
-    char addr_str [IP6_ADDR_STR_BUF_SIZE];
+    char compact_addr_str [IP6_ADDR_STR_BUF_SIZE];
     size_t k;
     int ret;
 
@@ -120,8 +120,8 @@ static int fprint_ip6_tree_json (
             fprintf ( stream, ",\n" );
         }
 
-        if ( ip6_addr_data_into_str ( &(addr->addr), addr_str ) != NULL ) {
-            fprint_ip6_addr_json ( stream, addr, addr_str );
+        if ( ip6_addr_data_into_str ( &(addr->addr), compact_addr_str ) != NULL ) {
+            fprint_ip6_addr_json ( stream, addr, compact_addr_str );
         } else {
             ret = -1;
         }
