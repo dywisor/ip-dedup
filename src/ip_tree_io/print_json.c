@@ -143,7 +143,7 @@ static void fprint_ip4_addr_json (
 ) {
     ip4_addr_data_t netmask;
 
-    /* start with all bits set */
+    /* calculate netmask */
     netmask = (
         IP4_MAX_ADDR & (
             IP4_MAX_ADDR << (IP4_MAX_PREFIXLEN - addr->prefixlen)
