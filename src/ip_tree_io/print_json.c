@@ -253,10 +253,29 @@ static void fprint_ip6_addr_json (
     const char* const compact_addr_str
 ) {
     ip6_addr_data_t netmask;
+    ip6_addr_data_t first_addr;
+    ip6_addr_data_t last_addr;
     char addr_str [IP6_ADDR_STR_BUF_SIZE];
 
     /* calculate netmask */
     ip6_calc_netmask ( addr->prefixlen, &netmask );
+
+    if ( addr->prefixlen >= IP6_MAX_PREFIXLEN ) {
+        first_addr = addr->addr;
+        last_addr  = addr->addr;
+
+    } else {
+        first_addr = addr->addr;
+
+        if ( addr->prefixlen >= IP6_DATA_CHUNK_SIZE ) {
+            last_addr.high = (addr->addr).high;
+            last_addr.low  = ( ((addr->addr).low) | ~(netmask.low) );
+
+        } else {
+            last_addr.high = ( ((addr->addr).high) | ~(netmask.high) );
+            last_addr.low  = IP6_DATA_CHUNK_MAX;
+        }
+    }
 
     /* begin of object */
 
@@ -337,6 +356,34 @@ static void fprint_ip6_addr_json (
         "netmask_exploded",
         ip6_addr_fmt_args(netmask)
     );
+
+    /* first: first address in network (in compact format) */
+    /* NOTE: should not error-out here (already printing to outstream) */
+    if ( ip6_addr_data_into_str ( &first_addr, addr_str ) != NULL ) {
+        fprintf ( \
+            stream,
+            ("%s%s%s\"%s\": \"%s\",\n"),
+            PRINT_IP_TREE_JSON_INDENT,
+            PRINT_IP_TREE_JSON_INDENT,
+            PRINT_IP_TREE_JSON_INDENT,
+            "first",
+            addr_str
+        );
+    }
+
+    /* last: last address in network (in compact format) */
+    /* NOTE: should not error-out here (already printing to outstream) */
+    if ( ip6_addr_data_into_str ( &last_addr, addr_str ) != NULL ) {
+        fprintf ( \
+            stream,
+            ("%s%s%s\"%s\": \"%s\",\n"),
+            PRINT_IP_TREE_JSON_INDENT,
+            PRINT_IP_TREE_JSON_INDENT,
+            PRINT_IP_TREE_JSON_INDENT,
+            "last",
+            addr_str
+        );
+    }
 
     /* prefixlen: prefixlen */
     fprintf ( \
