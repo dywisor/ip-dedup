@@ -142,6 +142,8 @@ static void fprint_ip4_addr_json (
     const struct ip4_addr_t* const restrict addr
 ) {
     ip4_addr_data_t netmask;
+    ip4_addr_data_t first_addr;
+    ip4_addr_data_t last_addr;
 
     /* calculate netmask */
     netmask = (
@@ -149,6 +151,20 @@ static void fprint_ip4_addr_json (
             IP4_MAX_ADDR << (IP4_MAX_PREFIXLEN - addr->prefixlen)
         )
     );
+
+    if ( addr->prefixlen >= IP4_MAX_PREFIXLEN ) {
+        first_addr = addr->addr;
+        last_addr  = addr->addr;
+
+    } else if ( (addr->prefixlen + 1) == IP4_MAX_PREFIXLEN ) {
+        /* /31 has no network/broadcast address */
+        first_addr = addr->addr;
+        last_addr  = addr->addr + 1;
+
+    } else {
+        first_addr = (addr->addr) + 1;
+        last_addr  = ( (addr->addr) | ~netmask ) - 1;
+    }
 
     /* begin of object */
     fprintf (
@@ -190,6 +206,28 @@ static void fprint_ip4_addr_json (
         PRINT_IP_TREE_JSON_INDENT,
         "netmask",
         ip4_addr_fmt_args(netmask)
+    );
+
+    /* first: first address in network */
+    fprintf ( \
+        stream,
+        ("%s%s%s\"%s\": \"" IP4_ADDR_FMT "\",\n"),
+        PRINT_IP_TREE_JSON_INDENT,
+        PRINT_IP_TREE_JSON_INDENT,
+        PRINT_IP_TREE_JSON_INDENT,
+        "first",
+        ip4_addr_fmt_args(first_addr)
+    );
+
+    /* last: last address in network */
+    fprintf ( \
+        stream,
+        ("%s%s%s\"%s\": \"" IP4_ADDR_FMT "\",\n"),
+        PRINT_IP_TREE_JSON_INDENT,
+        PRINT_IP_TREE_JSON_INDENT,
+        PRINT_IP_TREE_JSON_INDENT,
+        "last",
+        ip4_addr_fmt_args(last_addr)
     );
 
     /* prefixlen: prefixlen */
