@@ -9,6 +9,7 @@
 #include "../base.h"
 
 #define IP6_MAX_PREFIXLEN 128
+#define IP6_DATA_CHUNK_MAX 0xffffffffffffffff
 #define IP6_DATA_CHUNK_SIZE 64
 
 /*
@@ -82,6 +83,11 @@ void ip6_calc_set_bit_at_prefixpos (
     const ip6_addr_data_t* const restrict bits,
     const ip_prefixlen_t prefixpos,
     bool bit_set,
+    ip6_addr_data_t* const restrict dst
+);
+
+void ip6_calc_netmask (
+    const ip_prefixlen_t prefixlen,
     ip6_addr_data_t* const restrict dst
 );
 

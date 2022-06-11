@@ -133,6 +133,36 @@ void ip6_calc_set_bit_at_prefixpos (
 }
 
 
+void ip6_calc_netmask (
+    const ip_prefixlen_t prefixlen,
+    ip6_addr_data_t* const restrict dst
+) {
+    if ( prefixlen >= IP6_DATA_CHUNK_SIZE ) {
+        dst->high = IP6_DATA_CHUNK_MAX;
+
+        if ( prefixlen >= IP6_MAX_PREFIXLEN ) {
+            dst->low = IP6_DATA_CHUNK_MAX;
+
+        } else {
+            const ip_prefixlen_t rem = (prefixlen - IP6_DATA_CHUNK_SIZE);
+
+            dst->low = (
+                IP6_DATA_CHUNK_MAX & (
+                    IP6_DATA_CHUNK_MAX << (IP6_DATA_CHUNK_SIZE - rem)
+                )
+            );
+        }
+
+    } else {
+        dst->high = (
+            IP6_DATA_CHUNK_MAX & (
+                IP6_DATA_CHUNK_MAX << (IP6_DATA_CHUNK_SIZE - prefixlen)
+            )
+        );
+        dst->low  = 0x0;
+    }
+}
+
 static void ip6_addr_data_copy_to_blocks (
     const struct ip6_addr_data* const restrict bits,
     uint16_t* const restrict blocks
